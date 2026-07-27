@@ -1,33 +1,54 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Camera cam ;
+    [SerializeField] private float moveBudget = 10f; // 每次点击允许的最大 cost（路径长度）
+
+    private Camera cam;
     private NavMeshAgent agent;
-    private Ray ray;
-    private bool dirtyflag;
-    // Start is called before the first frame update
+
     void Awake()
     {
         cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (!Physics.Raycast(ray, out RaycastHit hit)) return;
+
+        var path = new NavMeshPath();
+        if (!agent.CalculatePath(hit.point, path)) return;
+        if (path.status == NavMeshPathStatus.PathInvalid) return;
+
+        Vector3 target = TruncateToBudget(path.corners, moveBudget);
+
+        // 落点吸附回 NavMesh，避免截断点落在网格边缘外
+        if (NavMesh.SamplePosition(target, out var navHit, 1f, agent.areaMask))
+            agent.SetDestination(navHit.position);
+    }
+
+    // 沿折线累加长度，超预算就在该段中间返回落点；预算够则返回终点
+    private Vector3 TruncateToBudget(Vector3[] corners, float budget)
+    {
+        if (corners.Length == 0) return transform.position;
+
+        float remaining = budget;
+        for (int i = 1; i < corners.Length; i++)
         {
-            ray=cam.ScreenPointToRay(Input.mousePosition);
-            dirtyflag = true;
+            float seg = Vector3.Distance(corners[i - 1], corners[i]);
+            if (seg <= remaining)
+            {
+                remaining -= seg;
+                continue;
+            }
+            Vector3 dir = (corners[i] - corners[i - 1]).normalized;
+            return corners[i - 1] + dir * remaining;
         }
-        if (dirtyflag == true &&Physics.Raycast(ray,out RaycastHit hit)) 
-        {
-            agent.SetDestination(hit.point);
-            dirtyflag=false;
-        }
+        return corners[corners.Length - 1];
     }
 }
