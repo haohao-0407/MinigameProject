@@ -2,7 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Vampire.Core;
+using Vampire.Units;
 
+namespace Vampire.Turns
+{
 // 回合调度：按单位速度（先攻）降序排出行动顺序，单位逐个行动。
 // 玩家单位回合：左键移动，空格结束回合。
 // 敌方单位回合：自动 AI —— 靠近最近的敌方单位，然后自动结束回合。
@@ -150,4 +154,5 @@ public class TurnManager : MonoBehaviour
         else
             GUI.Label(new Rect(10, 32, 700, 22), "AI 单位自动行动中…");
     }
+}
 }
