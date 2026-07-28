@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,6 +20,9 @@ namespace Vampire.Units
         public int CurrentStamina { get; private set; }
         public bool IsAlive => CurrentHealth > 0;
         public bool HasStamina => CurrentStamina > 0;
+
+        // 单位实际受到伤害时触发。参数依次为伤害来源和实际扣除的生命值。
+        public event Action<Unit, int> Damaged;
 
         // 是否与另一单位敌对
         public bool IsHostileTo(Unit other) => other != null && other.faction != faction;
@@ -155,6 +159,9 @@ namespace Vampire.Units
             int previousHealth = CurrentHealth;
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
             int applied = previousHealth - CurrentHealth;
+
+            if (applied > 0)
+                Damaged?.Invoke(source, applied);
 
             if (CurrentHealth == 0)
                 Die(source);
