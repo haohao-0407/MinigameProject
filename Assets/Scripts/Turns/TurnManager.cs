@@ -11,6 +11,7 @@ public class TurnManager : MonoBehaviour
 
     private int currentIndex = -1;
     private Camera cam;
+    private SelectionHighlight highlight;
 
     public Unit ActiveUnit =>
         currentIndex >= 0 && currentIndex < units.Count ? units[currentIndex] : null;
@@ -18,6 +19,7 @@ public class TurnManager : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        highlight = SelectionHighlight.Create();
 
         if (units == null || units.Count == 0)
             units = FindObjectsOfType<Unit>().ToList();
@@ -58,6 +60,7 @@ public class TurnManager : MonoBehaviour
         if (units.Count == 0) return;
         currentIndex = index % units.Count;
         ActiveUnit?.OnTurnStart();
+        highlight?.SetTarget(ActiveUnit != null ? ActiveUnit.transform : null);
     }
 
     void OnGUI()
