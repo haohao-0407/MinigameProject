@@ -18,10 +18,17 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private List<Unit> units = new List<Unit>();
     [Tooltip("AI 每步行动之间的停顿（秒），便于观察")]
     [SerializeField] private float aiActionDelay = 0.6f;
+    [Tooltip("触发结束回合后，等待单位移动完成的最长时间（秒）")]
+    [SerializeField, Min(0f)] private float turnEndMoveTimeout = 3f;
 
     private int currentIndex = -1;
     private Camera cam;
     private SelectionHighlight highlight;
+    private GameObject movementPreviewObject;
+    private LineRenderer movementPreviewLine;
+    private GameObject movementPreviewEndpoint;
+    private Material movementPreviewMaterial;
+    private readonly List<Vector3> movementPreviewPoints = new List<Vector3>();
     private bool aiActing;   // 敌方 AI 正在行动，期间屏蔽玩家输入
     private bool switching;   // 正在等待当前动作完成 / 切换回合，期间屏蔽输入
 
@@ -35,6 +42,7 @@ public class TurnManager : MonoBehaviour
     {
         cam = Camera.main;
         highlight = SelectionHighlight.Create();
+        CreateMovementPreview();
 
         if (units == null || units.Count == 0)
             units = FindObjectsOfType<Unit>().ToList();
@@ -50,10 +58,20 @@ public class TurnManager : MonoBehaviour
     void Update()
     {
         var active = ActiveUnit;
-        if (active == null || !active.IsAlive) return;
+        if (active == null || !active.IsAlive)
+        {
+            ClearMovementPreview();
+            return;
+        }
 
         // AI 行动期间、回合切换等待期间、或当前单位不由玩家操控时，不接受玩家输入
-        if (aiActing || switching || !IsPlayerControlled(active)) return;
+        if (aiActing || switching || !IsPlayerControlled(active))
+        {
+            ClearMovementPreview();
+            return;
+        }
+
+        UpdateMovementPreview(active);
 
         // 左键：移动当前行动单位
         if (Input.GetMouseButtonDown(0))
@@ -90,7 +108,7 @@ public class TurnManager : MonoBehaviour
         StartCoroutine(EndTurnWhenIdle());
     }
 
-    // 等当前单位停下（抵达目的地）后切换到下一回合
+    // 等当前单位停下后切换回合；超时则强制停止移动，避免回合卡死。
     private IEnumerator EndTurnWhenIdle()
     {
         switching = true;
@@ -100,8 +118,15 @@ public class TurnManager : MonoBehaviour
         // （否则同帧内 pathPending/hasPath 都还没置位，会被误判为“未移动”）
         yield return null;
 
-        while (active != null && active.IsMoving)
+        float deadline = Time.realtimeSinceStartup + turnEndMoveTimeout;
+        while (active != null && active.IsMoving && Time.realtimeSinceStartup < deadline)
             yield return null;
+
+        if (active != null && active.IsMoving)
+        {
+            active.StopMovement();
+            Debug.LogWarning($"{active.name} 结束回合等待移动超时，已强制停止移动。");
+        }
 
         switching = false;
         BeginTurn(currentIndex + 1);
@@ -136,6 +161,107 @@ public class TurnManager : MonoBehaviour
         // 非玩家阵营：自动执行 AI
         if (active != null && !IsPlayerControlled(active))
             StartCoroutine(RunEnemyTurn(active));
+    }
+
+    private void CreateMovementPreview()
+    {
+        movementPreviewObject = new GameObject("MovementPreview");
+        movementPreviewLine = movementPreviewObject.AddComponent<LineRenderer>();
+        movementPreviewLine.useWorldSpace = true;
+        movementPreviewLine.widthMultiplier = 0.08f;
+        movementPreviewLine.numCapVertices = 4;
+        movementPreviewLine.numCornerVertices = 2;
+        movementPreviewLine.positionCount = 0;
+
+        Shader previewShader = Shader.Find("Sprites/Default") ??
+                               Shader.Find("Universal Render Pipeline/Unlit") ??
+                               Shader.Find("Unlit/Color");
+        movementPreviewMaterial = new Material(previewShader)
+        {
+            color = new Color(0.2f, 1f, 0.35f, 0.85f)
+        };
+        movementPreviewLine.sharedMaterial = movementPreviewMaterial;
+
+        movementPreviewEndpoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        movementPreviewEndpoint.name = "MovementPreviewEndpoint";
+        movementPreviewEndpoint.transform.localScale = Vector3.one * 0.25f;
+        movementPreviewEndpoint.layer = LayerMask.NameToLayer("Ignore Raycast");
+        var endpointCollider = movementPreviewEndpoint.GetComponent<Collider>();
+        if (endpointCollider != null) Destroy(endpointCollider);
+
+        var endpointRenderer = movementPreviewEndpoint.GetComponent<Renderer>();
+        endpointRenderer.sharedMaterial = movementPreviewMaterial;
+        movementPreviewEndpoint.SetActive(false);
+    }
+
+    private void UpdateMovementPreview(Unit active)
+    {
+        if (cam == null || !TryGetPreviewWorldPoint(active, out Vector3 worldPoint) ||
+            !active.TryGetMovementPreview(worldPoint, movementPreviewPoints))
+        {
+            ClearMovementPreview();
+            return;
+        }
+
+        movementPreviewLine.positionCount = movementPreviewPoints.Count;
+        for (int i = 0; i < movementPreviewPoints.Count; i++)
+        {
+            Vector3 point = movementPreviewPoints[i];
+            point.y += 0.08f;
+            movementPreviewLine.SetPosition(i, point);
+        }
+
+        Vector3 endpoint = movementPreviewPoints[movementPreviewPoints.Count - 1];
+        endpoint.y += 0.12f;
+        movementPreviewEndpoint.transform.position = endpoint;
+        movementPreviewEndpoint.SetActive(true);
+    }
+
+    // 预览点与左键实际行为保持一致：地面为点击点，射程外敌人为靠近后的停留点。
+    private bool TryGetPreviewWorldPoint(Unit active, out Vector3 worldPoint)
+    {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (!Physics.Raycast(ray, out RaycastHit hit))
+        {
+            worldPoint = default;
+            return false;
+        }
+
+        Unit hoveredUnit = hit.collider.GetComponentInParent<Unit>();
+        if (hoveredUnit == null)
+        {
+            worldPoint = hit.point;
+            return true;
+        }
+
+        if (!active.IsHostileTo(hoveredUnit) || active.IsInAttackRange(hoveredUnit))
+        {
+            worldPoint = default;
+            return false;
+        }
+
+        Vector3 toSelf = active.transform.position - hoveredUnit.transform.position;
+        Vector3 direction = toSelf.sqrMagnitude > 0.0001f ? toSelf.normalized : active.transform.forward;
+        worldPoint = hoveredUnit.transform.position + direction * active.Type.attackRange;
+        return true;
+    }
+
+    private void ClearMovementPreview()
+    {
+        if (movementPreviewLine != null)
+            movementPreviewLine.positionCount = 0;
+        if (movementPreviewEndpoint != null)
+            movementPreviewEndpoint.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (movementPreviewObject != null)
+            Destroy(movementPreviewObject);
+        if (movementPreviewEndpoint != null)
+            Destroy(movementPreviewEndpoint);
+        if (movementPreviewMaterial != null)
+            Destroy(movementPreviewMaterial);
     }
 
     // 敌方 AI：靠近最近的敌方单位，移动完成后尝试攻击并自动结束回合。

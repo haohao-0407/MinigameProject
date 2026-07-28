@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Vampire.Combat;
@@ -34,10 +35,12 @@ namespace Vampire.Units
         }
 
         private NavMeshAgent agent;
+        private NavMeshPath movementPreviewPath;
 
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
+            movementPreviewPath = new NavMeshPath();
             if (type == null) return;
 
             CurrentHealth = Mathf.Max(1, type.maxHealth);
@@ -69,6 +72,45 @@ namespace Vampire.Units
                 int cost = Mathf.CeilToInt(traveled * type.moveCostPerMeter);
                 CurrentStamina = Mathf.Max(0, CurrentStamina - cost);
             }
+        }
+
+        // 立即取消当前移动。用于结束回合超时等需要强制停止的情况。
+        public void StopMovement()
+        {
+            if (agent == null || !agent.isOnNavMesh) return;
+            agent.ResetPath();
+        }
+
+        // 计算一次移动预览。points 返回实际移动会经过的 NavMesh 折线和预计终点。
+        // 该方法只计算路径，不会移动单位或消耗耐力。
+        public bool TryGetMovementPreview(Vector3 worldPoint, List<Vector3> points)
+        {
+            if (points == null) return false;
+            points.Clear();
+            if (!IsAlive || type == null || !HasStamina) return false;
+
+            if (movementPreviewPath == null)
+                movementPreviewPath = new NavMeshPath();
+
+            if (!agent.CalculatePath(worldPoint, movementPreviewPath) ||
+                movementPreviewPath.status == NavMeshPathStatus.PathInvalid)
+                return false;
+
+            float budgetMeters = CurrentStamina / Mathf.Max(0.0001f, type.moveCostPerMeter);
+            Vector3 endpoint = BuildTruncatedPath(movementPreviewPath.corners, budgetMeters, points, out _);
+
+            // 与 MoveTo 保持一致：最终落点吸附回 NavMesh。
+            if (!NavMesh.SamplePosition(endpoint, out var navHit, 1f, agent.areaMask))
+            {
+                points.Clear();
+                return false;
+            }
+
+            if (points.Count == 0)
+                points.Add(transform.position);
+
+            points[points.Count - 1] = navHit.position;
+            return points.Count > 1 && Vector3.Distance(points[0], points[points.Count - 1]) > 0.01f;
         }
 
         // 朝目标单位靠近，但停在距其 stopDistance 处。
@@ -138,10 +180,24 @@ namespace Vampire.Units
         // traveled 输出实际走过的距离，用于扣除耐力。
         private Vector3 TruncateToBudget(Vector3[] corners, float budget, out float traveled)
         {
-            traveled = 0f;
-            if (corners.Length == 0) return transform.position;
+            return BuildTruncatedPath(corners, budget, null, out traveled);
+        }
 
-            float remaining = budget;
+        // 沿折线累加长度，必要时在当前段中截断；points 不为空时同时写入预览折线。
+        private Vector3 BuildTruncatedPath(Vector3[] corners, float budget, List<Vector3> points,
+            out float traveled)
+        {
+            traveled = 0f;
+            if (points != null) points.Clear();
+            if (corners == null || corners.Length == 0)
+            {
+                if (points != null) points.Add(transform.position);
+                return transform.position;
+            }
+
+            if (points != null) points.Add(corners[0]);
+
+            float remaining = Mathf.Max(0f, budget);
             for (int i = 1; i < corners.Length; i++)
             {
                 float seg = Vector3.Distance(corners[i - 1], corners[i]);
@@ -149,12 +205,17 @@ namespace Vampire.Units
                 {
                     remaining -= seg;
                     traveled += seg;
+                    if (points != null) points.Add(corners[i]);
                     continue;
                 }
-                Vector3 dir = (corners[i] - corners[i - 1]).normalized;
+
+                Vector3 dir = seg > 0.0001f ? (corners[i] - corners[i - 1]).normalized : Vector3.zero;
                 traveled += remaining;
-                return corners[i - 1] + dir * remaining;
+                Vector3 endpoint = corners[i - 1] + dir * remaining;
+                if (points != null) points.Add(endpoint);
+                return endpoint;
             }
+
             return corners[corners.Length - 1];
         }
     }
