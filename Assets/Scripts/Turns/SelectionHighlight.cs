@@ -14,6 +14,8 @@ public class SelectionHighlight : MonoBehaviour
     [SerializeField] private Color color = new Color(0.2f, 0.9f, 1f, 1f);
 
     private Transform target;
+    private Mesh ringMesh;
+    private Material ringMaterial;
 
     // 运行时创建一个带 SelectionHighlight 的物体
     public static SelectionHighlight Create()
@@ -22,17 +24,51 @@ public class SelectionHighlight : MonoBehaviour
         return go.AddComponent<SelectionHighlight>();
     }
 
+    // 创建一个指定颜色和尺寸的光环。可用于敌方标记等常驻提示。
+    public static SelectionHighlight Create(Color ringColor, string objectName,
+        float innerRadius, float outerRadius, float groundOffset)
+    {
+        var go = new GameObject(objectName);
+        var highlight = go.AddComponent<SelectionHighlight>();
+        highlight.Configure(ringColor, innerRadius, outerRadius, groundOffset);
+        return highlight;
+    }
+
     void Awake()
     {
-        GetComponent<MeshFilter>().mesh = BuildRingMesh();
+        RebuildMesh();
 
         // URP 下用无光照 + 自发光材质，保证颜色鲜亮且不受场景光影响
         var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
-        var mat = new Material(shader);
-        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-        if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
-        GetComponent<MeshRenderer>().sharedMaterial = mat;
+        ringMaterial = new Material(shader);
+        ApplyColor();
+        GetComponent<MeshRenderer>().sharedMaterial = ringMaterial;
         GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
+
+    private void Configure(Color ringColor, float newInnerRadius, float newOuterRadius,
+        float newGroundOffset)
+    {
+        color = ringColor;
+        innerRadius = Mathf.Max(0f, newInnerRadius);
+        outerRadius = Mathf.Max(innerRadius, newOuterRadius);
+        groundOffset = newGroundOffset;
+        RebuildMesh();
+        ApplyColor();
+    }
+
+    private void ApplyColor()
+    {
+        if (ringMaterial == null) return;
+        if (ringMaterial.HasProperty("_BaseColor")) ringMaterial.SetColor("_BaseColor", color);
+        if (ringMaterial.HasProperty("_Color")) ringMaterial.SetColor("_Color", color);
+    }
+
+    private void RebuildMesh()
+    {
+        if (ringMesh != null) Destroy(ringMesh);
+        ringMesh = BuildRingMesh();
+        GetComponent<MeshFilter>().sharedMesh = ringMesh;
     }
 
     // 把光环挂到目标单位脚下；target 为 null 则隐藏
@@ -92,6 +128,12 @@ public class SelectionHighlight : MonoBehaviour
         mesh.triangles = tris;
         mesh.RecalculateBounds();
         return mesh;
+    }
+
+    private void OnDestroy()
+    {
+        if (ringMesh != null) Destroy(ringMesh);
+        if (ringMaterial != null) Destroy(ringMaterial);
     }
 }
 }
