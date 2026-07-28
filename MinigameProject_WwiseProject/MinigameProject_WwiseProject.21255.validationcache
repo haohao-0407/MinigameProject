@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ValidationCache Version="1" SchemaVersion="133">
+	<ValidationCacheItem File="C:\Users\21255\AppData\Roaming\Audiokinetic\MediaPool\2\MediaPoolQuery.wsettings" DateLow="1785235396" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Attenuations\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Attenuations\Factory Attenuations.wwu" DateLow="1785227238" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Busses\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Containers\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Control Surface Sessions\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Conversion Settings\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1785227238" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Devices\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Effects\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Effects\Factory Effects.wwu" DateLow="1785227238" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Events\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Game Parameters\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Metadata\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\MinigameProject_WwiseProject.21255.wsettings" DateLow="1785235396" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\MinigameProject_WwiseProject.wproj" DateLow="1785233190" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Mixing Sessions\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Modulators\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Presets\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Presets\Factory Spatial Audio.wwu" DateLow="1785227238" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Queries\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Queries\Factory Queries.wwu" DateLow="1785227238" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Sidechain Mixes\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\SoundBanks\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\States\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Switches\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Triggers\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+	<ValidationCacheItem File="D:\Git\MinigameProject\MinigameProject_WwiseProject\Virtual Acoustics\Default Work Unit.wwu" DateLow="1785230388" DateHigh="0"/>
+</ValidationCache>
