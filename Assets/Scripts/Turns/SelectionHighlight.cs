@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace Vampire.Turns
+{
 // 当前行动单位脚下的地面光环。运行时程序化生成一个扁平圆环网格，
 // 通过 SetTarget 挂到目标单位下方，随单位移动自动跟随。
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -91,4 +93,5 @@ public class SelectionHighlight : MonoBehaviour
         mesh.RecalculateBounds();
         return mesh;
     }
+}
 }
