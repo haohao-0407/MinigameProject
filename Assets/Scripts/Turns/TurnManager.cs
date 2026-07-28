@@ -24,6 +24,7 @@ public class TurnManager : MonoBehaviour
     private int currentIndex = -1;
     private Camera cam;
     private SelectionHighlight highlight;
+    private readonly List<SelectionHighlight> factionHighlights = new List<SelectionHighlight>();
     private GameObject movementPreviewObject;
     private LineRenderer movementPreviewLine;
     private GameObject movementPreviewEndpoint;
@@ -52,6 +53,7 @@ public class TurnManager : MonoBehaviour
                      .OrderByDescending(u => u.Type.speed)
                      .ToList();
 
+        CreateFactionHighlights();
         BeginTurn(0);
     }
 
@@ -192,6 +194,30 @@ public class TurnManager : MonoBehaviour
         var endpointRenderer = movementPreviewEndpoint.GetComponent<Renderer>();
         endpointRenderer.sharedMaterial = movementPreviewMaterial;
         movementPreviewEndpoint.SetActive(false);
+    }
+
+    private void CreateFactionHighlights()
+    {
+        var enemyColor = new Color(1f, 0.12f, 0.08f, 1f);
+        var friendlyColor = new Color(0.15f, 1f, 0.25f, 1f);
+        foreach (Unit unit in units)
+        {
+            if (unit == null) continue;
+
+            bool friendly = IsPlayerControlled(unit);
+            Color ringColor = friendly ? friendlyColor : enemyColor;
+            string prefix = friendly ? "FriendlyHighlight" : "EnemyHighlight";
+
+            // 使用比行动光环稍大的阵营外圈，行动时两种提示仍能同时看清。
+            SelectionHighlight factionHighlight = SelectionHighlight.Create(
+                ringColor,
+                $"{prefix}_{unit.name}",
+                0.82f,
+                0.98f,
+                0.04f);
+            factionHighlight.SetTarget(unit.transform);
+            factionHighlights.Add(factionHighlight);
+        }
     }
 
     private void UpdateMovementPreview(Unit active)
