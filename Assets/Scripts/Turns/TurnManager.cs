@@ -16,8 +16,6 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private Faction playerFaction = Faction.VampireHunter;
     [Tooltip("留空则运行时自动收集场景中的所有 Unit")]
     [SerializeField] private List<Unit> units = new List<Unit>();
-    [Tooltip("AI 靠近目标时停留的距离")]
-    [SerializeField] private float aiStopDistance = 1.5f;
     [Tooltip("AI 每步行动之间的停顿（秒），便于观察")]
     [SerializeField] private float aiActionDelay = 0.6f;
 
@@ -52,7 +50,7 @@ public class TurnManager : MonoBehaviour
     void Update()
     {
         var active = ActiveUnit;
-        if (active == null) return;
+        if (active == null || !active.IsAlive) return;
 
         // AI 行动期间、回合切换等待期间、或当前单位不由玩家操控时，不接受玩家输入
         if (aiActing || switching || !IsPlayerControlled(active)) return;
@@ -62,7 +60,22 @@ public class TurnManager : MonoBehaviour
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
+                if (clickedUnit != null)
+                {
+                    if (!active.IsHostileTo(clickedUnit)) return;
+
+                    // 射程内攻击；射程外先靠近，玩家可在移动完成后再次点击攻击。
+                    if (active.TryAttack(clickedUnit))
+                        NextTurn();
+                    else
+                        active.MoveToward(clickedUnit, active.Type.attackRange);
+                    return;
+                }
+
                 active.MoveTo(hit.point);
+            }
         }
 
         // 空格：结束当前回合（等当前移动走完再真正切换）
@@ -97,9 +110,26 @@ public class TurnManager : MonoBehaviour
     private void BeginTurn(int index)
     {
         if (units.Count == 0) return;
-        currentIndex = index % units.Count;
+
+        // 保留原列表顺序并跳过已经阵亡/销毁的单位，避免删除元素后打乱回合索引。
+        for (int offset = 0; offset < units.Count; offset++)
+        {
+            int candidateIndex = (index + offset) % units.Count;
+            Unit candidate = units[candidateIndex];
+            if (candidate == null || !candidate.IsAlive) continue;
+
+            currentIndex = candidateIndex;
+            break;
+        }
 
         var active = ActiveUnit;
+        if (active == null || !active.IsAlive)
+        {
+            currentIndex = -1;
+            highlight?.SetTarget(null);
+            return;
+        }
+
         active?.OnTurnStart();
         highlight?.SetTarget(active != null ? active.transform : null);
 
@@ -108,7 +138,7 @@ public class TurnManager : MonoBehaviour
             StartCoroutine(RunEnemyTurn(active));
     }
 
-    // 敌方 AI：靠近最近的敌方单位，移动完成后自动结束回合
+    // 敌方 AI：靠近最近的敌方单位，移动完成后尝试攻击并自动结束回合。
     private IEnumerator RunEnemyTurn(Unit self)
     {
         aiActing = true;
@@ -117,10 +147,22 @@ public class TurnManager : MonoBehaviour
 
         Unit target = FindNearestHostile(self);
         if (target != null)
-            self.MoveToward(target, aiStopDistance);
+        {
+            if (!self.IsInAttackRange(target))
+            {
+                self.MoveToward(target, self.Type.attackRange);
+
+                // 等一帧让 NavMeshAgent 开始计算路径，再等待移动结束。
+                yield return null;
+                while (self != null && self.IsAlive && self.IsMoving)
+                    yield return null;
+            }
+
+            if (self != null && self.IsAlive && target != null && target.IsAlive)
+                self.TryAttack(target);
+        }
 
         aiActing = false;
-        // 交给 NextTurn 等待移动真正走完后再切换
         NextTurn();
     }
 
@@ -131,7 +173,7 @@ public class TurnManager : MonoBehaviour
         float bestSqr = float.MaxValue;
         foreach (var u in units)
         {
-            if (u == null || !self.IsHostileTo(u)) continue;
+            if (u == null || !u.IsAlive || !self.IsHostileTo(u)) continue;
             float d = (u.transform.position - self.transform.position).sqrMagnitude;
             if (d < bestSqr) { bestSqr = d; best = u; }
         }
@@ -147,10 +189,12 @@ public class TurnManager : MonoBehaviour
         string faction = FactionNames.Display(active.Faction);
         string ctrl = player ? "（你）" : "（AI）";
         GUI.Label(new Rect(10, 10, 700, 22),
-            $"当前回合: [{faction}] {active.Type.displayName}{ctrl}    耐力: {active.CurrentStamina}/{active.Type.maxStamina}");
+            $"当前回合: [{faction}] {active.Type.displayName}{ctrl}    " +
+            $"生命: {active.CurrentHealth}/{active.Type.maxHealth}    " +
+            $"耐力: {active.CurrentStamina}/{active.Type.maxStamina}");
 
         if (player)
-            GUI.Label(new Rect(10, 32, 700, 22), "左键=移动当前单位    空格=结束回合");
+            GUI.Label(new Rect(10, 32, 700, 22), "左键地面=移动    左键敌人=靠近/攻击    空格=结束回合");
         else
             GUI.Label(new Rect(10, 32, 700, 22), "AI 单位自动行动中…");
     }

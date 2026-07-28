@@ -10,10 +10,11 @@ namespace Vampire.Units
         [Header("标识")]
         public string displayName = "Unit";
 
-        [Header("战斗属性（战斗系统未实现，先预留）")]
+        [Header("战斗属性")]
+        public int maxHealth = 20;        // 最大生命值
         public int attack = 5;            // 攻击力
         public int defense = 2;           // 防御力
-        public float attackRange = 1.5f;  // 射程
+        public float attackRange = 1.5f;  // 射程（单位中心到中心的距离）
 
         [Header("回合 / 行动")]
         public int maxStamina = 10;        // 耐力：每回合可用的行动点

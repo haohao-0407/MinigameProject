@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.AI;
+using Vampire.Combat;
 using Vampire.Core;
 
 namespace Vampire.Units
 {
-    // 挂在每个单位 GameObject 上。持有单位种类、阵营、当前耐力，负责按耐力预算移动。
-    // 战斗（攻击/受伤/阵亡）尚未实现，留待后续。
+    // 挂在每个单位 GameObject 上。持有单位种类、阵营和当前状态，负责移动与基础战斗。
     [RequireComponent(typeof(NavMeshAgent))]
     public class Unit : MonoBehaviour
     {
@@ -14,7 +14,9 @@ namespace Vampire.Units
 
         public UnitType Type => type;
         public Faction Faction => faction;
+        public int CurrentHealth { get; private set; }
         public int CurrentStamina { get; private set; }
+        public bool IsAlive => CurrentHealth > 0;
         public bool HasStamina => CurrentStamina > 0;
 
         // 是否与另一单位敌对
@@ -36,19 +38,22 @@ namespace Vampire.Units
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
-            if (type != null) CurrentStamina = type.maxStamina;
+            if (type == null) return;
+
+            CurrentHealth = Mathf.Max(1, type.maxHealth);
+            CurrentStamina = type.maxStamina;
         }
 
         // 回合开始时恢复行动点
         public void OnTurnStart()
         {
-            CurrentStamina = type != null ? type.maxStamina : 0;
+            CurrentStamina = IsAlive && type != null ? type.maxStamina : 0;
         }
 
         // 尝试移动到目标点：按当前耐力换算出可走距离，截断路径后移动并扣除耐力
         public void MoveTo(Vector3 worldPoint)
         {
-            if (type == null || !HasStamina) return;
+            if (!IsAlive || type == null || !HasStamina) return;
 
             var path = new NavMeshPath();
             if (!agent.CalculatePath(worldPoint, path)) return;
@@ -66,15 +71,67 @@ namespace Vampire.Units
             }
         }
 
-        // AI 用：朝目标单位靠近，但停在距其 stopDistance 处（为将来的攻击射程留空间）。
+        // 朝目标单位靠近，但停在距其 stopDistance 处。
         public void MoveToward(Unit target, float stopDistance)
         {
-            if (target == null) return;
+            if (target == null || !target.IsAlive) return;
 
             Vector3 toSelf = transform.position - target.transform.position;
             // 目标点取“目标单位朝我方向、退开 stopDistance”的位置
-            Vector3 desired = target.transform.position + toSelf.normalized * stopDistance;
+            Vector3 direction = toSelf.sqrMagnitude > 0.0001f ? toSelf.normalized : transform.forward;
+            Vector3 desired = target.transform.position + direction * Mathf.Max(0f, stopDistance);
             MoveTo(desired);
+        }
+
+        // 目标是否处于本单位的普通攻击射程内（按单位中心距离计算）。
+        public bool IsInAttackRange(Unit target)
+        {
+            if (!IsAlive || type == null || target == null || !target.IsAlive) return false;
+            return Vector3.Distance(transform.position, target.transform.position) <= type.attackRange;
+        }
+
+        // 尝试进行一次普通攻击。成功命中返回 true；非法目标或超出射程返回 false。
+        public bool TryAttack(Unit target)
+        {
+            if (!IsHostileTo(target) || !IsInAttackRange(target)) return false;
+
+            // 攻击是本回合的最终动作，停止尚未完成的移动。
+            if (agent != null && agent.isOnNavMesh && agent.hasPath)
+                agent.ResetPath();
+
+            int amount = Damage.Compute(type.attack, target.type.defense);
+            target.TakeDamage(this, amount);
+            Debug.Log($"{name} 攻击 {target.name}，造成 {amount} 点伤害。");
+            return true;
+        }
+
+        // 承受已经计算完成的伤害，返回实际扣除的生命值。
+        public int TakeDamage(Unit source, int amount)
+        {
+            if (!IsAlive || amount <= 0) return 0;
+
+            int previousHealth = CurrentHealth;
+            CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+            int applied = previousHealth - CurrentHealth;
+
+            if (CurrentHealth == 0)
+                Die(source);
+
+            return applied;
+        }
+
+        private void Die(Unit killer)
+        {
+            CurrentStamina = 0;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+                agent.isStopped = true;
+            }
+
+            string killerName = killer != null ? killer.name : "未知来源";
+            Debug.Log($"{name} 被 {killerName} 击败。");
+            Destroy(gameObject);
         }
 
         // 沿折线累加长度，超预算就在该段中间返回落点；预算够则返回终点。
