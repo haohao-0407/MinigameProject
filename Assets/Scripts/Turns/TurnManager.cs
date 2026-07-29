@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Vampire.Core;
+using Vampire.Skills;
 using Vampire.Units;
 
 namespace Vampire.Turns
@@ -32,6 +33,11 @@ public class TurnManager : MonoBehaviour
     private readonly List<Vector3> movementPreviewPoints = new List<Vector3>();
     private bool aiActing;   // 敌方 AI 正在行动，期间屏蔽玩家输入
     private bool switching;   // 正在等待当前动作完成 / 切换回合，期间屏蔽输入
+    private bool skillTargeting; // 处于技能目标选择模式：左键点选友军施放，屏蔽移动/攻击
+
+    // 当前行动单位的技能控制器（英雄单位才有）。
+    private SkillController ActiveSkills =>
+        ActiveUnit != null ? ActiveUnit.GetComponent<SkillController>() : null;
 
     public Unit ActiveUnit =>
         currentIndex >= 0 && currentIndex < units.Count ? units[currentIndex] : null;
@@ -70,6 +76,36 @@ public class TurnManager : MonoBehaviour
         if (aiActing || switching || !IsPlayerControlled(active))
         {
             ClearMovementPreview();
+            return;
+        }
+
+        // H：在有可发动主动技能时，切换技能目标选择模式
+        var skills = ActiveSkills;
+        if (Input.GetKeyDown(KeyCode.H) && skills != null && skills.HasActivatableSkill())
+            skillTargeting = !skillTargeting;
+
+        // 技能选择模式：屏蔽移动/攻击，左键点选友军施放，右键取消。
+        if (skillTargeting)
+        {
+            ClearMovementPreview();
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                skillTargeting = false;
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray skillRay = cam.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(skillRay, out RaycastHit skillHit))
+                {
+                    Unit clicked = skillHit.collider.GetComponentInParent<Unit>();
+                    // 施放成功后退出选择模式（不结束回合）；失败则保持模式便于重选。
+                    if (clicked != null && skills != null && skills.TryUse(0, clicked))
+                        skillTargeting = false;
+                }
+            }
             return;
         }
 
@@ -136,6 +172,7 @@ public class TurnManager : MonoBehaviour
 
     private void BeginTurn(int index)
     {
+        skillTargeting = false; // 切换回合时退出技能选择模式
         if (units.Count == 0) return;
 
         // 保留原列表顺序并跳过已经阵亡/销毁的单位，避免删除元素后打乱回合索引。
@@ -346,9 +383,24 @@ public class TurnManager : MonoBehaviour
             $"耐力: {active.CurrentStamina}/{active.Type.maxStamina}");
 
         if (player)
+        {
             GUI.Label(new Rect(10, 32, 700, 22), "左键地面=移动    左键敌人=靠近/攻击    空格=结束回合");
+
+            // 英雄单位：显示主动技能与充能层数、操作提示。
+            var skills = ActiveSkills;
+            var skill = skills != null ? skills.GetActiveSkill(0) : null;
+            if (skill != null)
+            {
+                string charges = skill.UsesCharges ? $"（充能 {skills.GetCharges(0)}/{skill.maxCharges}）" : "";
+                string state = skillTargeting ? "  [选择目标中：左键点友军，右键取消]" : "";
+                GUI.Label(new Rect(10, 54, 700, 22),
+                    $"H={skill.displayName}{charges}{state}");
+            }
+        }
         else
+        {
             GUI.Label(new Rect(10, 32, 700, 22), "AI 单位自动行动中…");
+        }
     }
 }
 }

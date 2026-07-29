@@ -13,16 +13,20 @@ Shader "Hidden/PixelArt/PaletteLab"
             ZTest Always
 
             HLSLPROGRAM
-            #pragma target 3.5
+            #pragma target 4.5
             #pragma vertex Vert
             #pragma fragment FragPaletteLab
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-            #define MAX_PALETTE_COLORS 32
+            struct PaletteEntry
+            {
+                float4 color;
+                float4 lab;
+            };
 
-            float4 _PaletteColors[MAX_PALETTE_COLORS];
+            StructuredBuffer<PaletteEntry> _PaletteEntries;
             int _PaletteCount;
 
             float3 CameraColorToSrgb(float3 rgb)
@@ -98,15 +102,11 @@ Shader "Hidden/PixelArt/PaletteLab"
                 float closestDistanceSquared = 3.402823466e+38;
 
                 [loop]
-                for (int i = 0; i < MAX_PALETTE_COLORS; i++)
+                for (int i = 0; i < _PaletteCount; i++)
                 {
-                    if (i >= _PaletteCount)
-                    {
-                        break;
-                    }
-
-                    float3 paletteColor = saturate(_PaletteColors[i].rgb);
-                    float3 difference = sourceLab - RgbToLab(paletteColor);
+                    PaletteEntry paletteEntry = _PaletteEntries[i];
+                    float3 paletteColor = saturate(paletteEntry.color.rgb);
+                    float3 difference = sourceLab - paletteEntry.lab.xyz;
                     float distanceSquared = dot(difference, difference);
 
                     if (distanceSquared < closestDistanceSquared)

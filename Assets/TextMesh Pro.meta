@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/TextMesh Pro.meta
-guid: f54d1bd14bd3ca042bd867b519fee8cc
+<<<<<<<< HEAD:Assets/ProBuilder Data.meta
+guid: 13bf85c8ca938ab40a85752564780342
 ========
-guid: 57f48858c3ce1cf4a83d0b2a2647c3e6
->>>>>>>> 0.0.3:Assets/Scripts/Camera.meta
+guid: f54d1bd14bd3ca042bd867b519fee8cc
+>>>>>>>> origin/0.0.4:Assets/TextMesh Pro.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

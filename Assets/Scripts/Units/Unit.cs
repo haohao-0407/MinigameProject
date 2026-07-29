@@ -24,6 +24,12 @@ namespace Vampire.Units
         // 单位实际受到伤害时触发。参数依次为伤害来源和实际扣除的生命值。
         public event Action<Unit, int> Damaged;
 
+        // 单位实际回复生命时触发。参数为实际恢复的生命值。
+        public event Action<int> Healed;
+
+        // 本单位击杀了某个单位时触发。参数为被击杀者。供技能被动（如击杀充能）监听。
+        public event Action<Unit> DealtKill;
+
         // 是否与另一单位敌对
         public bool IsHostileTo(Unit other) => other != null && other.faction != faction;
 
@@ -151,6 +157,28 @@ namespace Vampire.Units
             return true;
         }
 
+        // 回复生命值，上限为最大生命。返回实际恢复的量；实际回血 >0 时触发 Healed。
+        public int Heal(int amount)
+        {
+            if (!IsAlive || amount <= 0 || type == null) return 0;
+
+            int previousHealth = CurrentHealth;
+            CurrentHealth = Mathf.Min(type.maxHealth, CurrentHealth + amount);
+            int restored = CurrentHealth - previousHealth;
+
+            if (restored > 0)
+                Healed?.Invoke(restored);
+
+            return restored;
+        }
+
+        // 消耗耐力（行动点）。供技能等外部系统扣除，钳制到 0。
+        public void SpendStamina(int amount)
+        {
+            if (amount <= 0) return;
+            CurrentStamina = Mathf.Max(0, CurrentStamina - amount);
+        }
+
         // 承受已经计算完成的伤害，返回实际扣除的生命值。
         public int TakeDamage(Unit source, int amount)
         {
@@ -180,6 +208,10 @@ namespace Vampire.Units
 
             string killerName = killer != null ? killer.name : "未知来源";
             Debug.Log($"{name} 被 {killerName} 击败。");
+
+            // 通知击杀者（用于击杀充能等被动）。在 Destroy 前触发。
+            killer?.DealtKill?.Invoke(this);
+
             Destroy(gameObject);
         }
 
