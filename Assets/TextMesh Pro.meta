@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/ProBuilder Data.meta
+guid: 13bf85c8ca938ab40a85752564780342
+========
 guid: f54d1bd14bd3ca042bd867b519fee8cc
+>>>>>>>> origin/0.0.4:Assets/TextMesh Pro.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
