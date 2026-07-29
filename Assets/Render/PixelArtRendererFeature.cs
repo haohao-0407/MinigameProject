@@ -8,7 +8,6 @@ using UnityEngine.Rendering.Universal;
 /// </summary>
 public sealed class PixelArtRendererFeature : ScriptableRendererFeature
 {
-    private const int MaxPaletteColors = 32;
     private const RenderPassEvent PixelationEvent = RenderPassEvent.AfterRenderingTransparents;
 
     [Header("Pixel Resolution")]
@@ -18,7 +17,8 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
     [Header("Lab Palette Mapping")]
     [SerializeField] private bool m_EnablePaletteMapping = true;
     [SerializeField] private Shader m_PaletteShader;
-    [SerializeField] private Color[] m_Palette = CreateDefaultPalette();
+    [SerializeField, Min(1)] private int m_GradientPaletteSize = 216;
+    [SerializeField] private Gradient[] m_PaletteGradients = CreateDefaultGradients();
 
     [Header("Cameras")]
     [SerializeField] private bool m_ApplyToSceneView;
@@ -61,7 +61,8 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
             Mathf.Max(1, m_TargetWidth),
             Mathf.Max(1, m_TargetHeight),
             m_EnablePaletteMapping,
-            m_Palette);
+            Mathf.Max(1, m_GradientPaletteSize),
+            m_PaletteGradients);
     }
 
     protected override void Dispose(bool disposing)
@@ -87,28 +88,55 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
         return m_ApplyToSceneView && cameraData.cameraType == CameraType.SceneView;
     }
 
-    private static Color[] CreateDefaultPalette()
+    private static Gradient[] CreateDefaultGradients()
     {
-        // DawnBringer 16. Values are stored as sRGB and converted in the shader.
-        return new Color[]
+        const int hueCount = 12;
+        var gradients = new Gradient[hueCount + 1];
+
+        // Twelve high-saturation value ramps cover the hue wheel. Keeping the
+        // hue fixed while varying value produces vivid shadows, midtones, and
+        // highlights instead of the desaturated center of a uniform RGB grid.
+        for (int hueIndex = 0; hueIndex < hueCount; hueIndex++)
         {
-            new Color32(20, 12, 28, 255),
-            new Color32(68, 36, 52, 255),
-            new Color32(48, 52, 109, 255),
-            new Color32(78, 74, 78, 255),
-            new Color32(133, 76, 48, 255),
-            new Color32(52, 101, 36, 255),
-            new Color32(208, 70, 72, 255),
-            new Color32(117, 113, 97, 255),
-            new Color32(89, 125, 206, 255),
-            new Color32(210, 125, 44, 255),
-            new Color32(133, 149, 161, 255),
-            new Color32(109, 170, 44, 255),
-            new Color32(210, 170, 153, 255),
-            new Color32(109, 194, 202, 255),
-            new Color32(218, 212, 94, 255),
-            new Color32(222, 238, 214, 255)
+            float hue = hueIndex / (float)hueCount;
+            gradients[hueIndex] = CreateGradient(
+                Color.HSVToRGB(hue, 0.85f, 0.10f),
+                Color.HSVToRGB(hue, 1.00f, 0.58f),
+                Color.HSVToRGB(hue, 0.92f, 1.00f));
+        }
+
+        // Preserve reliable matches for neutral lighting, fog, shadows, and UI.
+        gradients[hueCount] = CreateGradient(
+            new Color32(4, 4, 7, 255),
+            new Color32(48, 48, 58, 255),
+            new Color32(128, 132, 142, 255),
+            new Color32(238, 242, 246, 255));
+
+        return gradients;
+    }
+
+    private static Gradient CreateGradient(params Color[] colors)
+    {
+        var colorKeys = new GradientColorKey[colors.Length];
+        for (int i = 0; i < colors.Length; i++)
+        {
+            float time = colors.Length == 1 ? 0f : i / (float)(colors.Length - 1);
+            colorKeys[i] = new GradientColorKey(colors[i], time);
+        }
+
+        var gradient = new Gradient
+        {
+            mode = GradientMode.Blend,
+            colorSpace = ColorSpace.Gamma
         };
+        gradient.SetKeys(
+            colorKeys,
+            new[]
+            {
+                new GradientAlphaKey(1f, 0f),
+                new GradientAlphaKey(1f, 1f)
+            });
+        return gradient;
     }
 
     private sealed class PixelArtRenderPass : ScriptableRenderPass
@@ -116,21 +144,35 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
         private const string LowResolutionTextureName = "_PixelArtLowResolutionTexture";
         private const string PaletteTextureName = "_PixelArtPaletteTexture";
 
-        private static readonly int PaletteColorsId = Shader.PropertyToID("_PaletteColors");
+        private static readonly int PaletteEntriesId = Shader.PropertyToID("_PaletteEntries");
         private static readonly int PaletteCountId = Shader.PropertyToID("_PaletteCount");
 
         private readonly ProfilingSampler m_ProfilingSampler =
             new ProfilingSampler("Pixel Art Downsample/Palette/Upsample");
-        private readonly Vector4[] m_PaletteColors = new Vector4[MaxPaletteColors];
         private readonly Material m_PaletteMaterial;
 
         private RTHandle m_CameraColor;
         private RTHandle m_LowResolutionTexture;
         private RTHandle m_PaletteTexture;
+        private PaletteEntry[] m_PaletteEntries = new PaletteEntry[0];
+        private GraphicsBuffer m_PaletteBuffer;
         private int m_TargetWidth;
         private int m_TargetHeight;
         private int m_PaletteCount;
+        private int m_PaletteSettingsHash = int.MinValue;
         private bool m_UsePaletteMapping;
+
+        private struct PaletteEntry
+        {
+            public Vector4 color;
+            public Vector4 lab;
+
+            public PaletteEntry(Color sourceColor, Vector4 labColor)
+            {
+                color = sourceColor;
+                lab = labColor;
+            }
+        }
 
         public PixelArtRenderPass(RenderPassEvent passEvent, Shader paletteShader)
         {
@@ -145,20 +187,183 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
             int targetWidth,
             int targetHeight,
             bool enablePaletteMapping,
-            Color[] palette)
+            int paletteSize,
+            Gradient[] paletteGradients)
         {
             m_CameraColor = cameraColor;
             m_TargetWidth = targetWidth;
             m_TargetHeight = targetHeight;
-            m_PaletteCount = Mathf.Min(palette?.Length ?? 0, MaxPaletteColors);
+            BuildGradientPalette(paletteGradients, paletteSize);
             m_UsePaletteMapping = enablePaletteMapping &&
                                   m_PaletteMaterial != null &&
                                   m_PaletteCount > 0;
+        }
 
-            for (int i = 0; i < m_PaletteCount; i++)
+        private void BuildGradientPalette(Gradient[] gradients, int requestedColorCount)
+        {
+            int settingsHash = CalculatePaletteSettingsHash(gradients, requestedColorCount);
+            if (settingsHash == m_PaletteSettingsHash && m_PaletteBuffer != null)
             {
-                m_PaletteColors[i] = palette[i];
+                return;
             }
+
+            m_PaletteSettingsHash = settingsHash;
+            m_PaletteCount = 0;
+            if (gradients == null || gradients.Length == 0)
+            {
+                ReleasePaletteBuffer();
+                return;
+            }
+
+            int validGradientCount = 0;
+            for (int i = 0; i < gradients.Length; i++)
+            {
+                if (gradients[i] != null)
+                {
+                    validGradientCount++;
+                }
+            }
+
+            if (validGradientCount == 0)
+            {
+                ReleasePaletteBuffer();
+                return;
+            }
+
+            int colorCount = Mathf.Max(1, requestedColorCount);
+            if (m_PaletteEntries.Length != colorCount)
+            {
+                m_PaletteEntries = new PaletteEntry[colorCount];
+            }
+
+            int baseSamplesPerGradient = colorCount / validGradientCount;
+            int remainder = colorCount % validGradientCount;
+            int validGradientIndex = 0;
+
+            for (int gradientIndex = 0; gradientIndex < gradients.Length; gradientIndex++)
+            {
+                Gradient gradient = gradients[gradientIndex];
+                if (gradient == null)
+                {
+                    continue;
+                }
+
+                int sampleCount = baseSamplesPerGradient +
+                                  (validGradientIndex < remainder ? 1 : 0);
+                validGradientIndex++;
+
+                if (sampleCount == 0)
+                {
+                    continue;
+                }
+
+                for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++)
+                {
+                    float time = sampleCount == 1
+                        ? 0.5f
+                        : sampleIndex / (float)(sampleCount - 1);
+                    Color color = gradient.Evaluate(time);
+                    m_PaletteEntries[m_PaletteCount] =
+                        new PaletteEntry(color, SrgbToLab(color));
+                    m_PaletteCount++;
+                }
+            }
+
+            UploadPaletteBuffer();
+        }
+
+        private void UploadPaletteBuffer()
+        {
+            if (m_PaletteCount == 0)
+            {
+                ReleasePaletteBuffer();
+                return;
+            }
+
+            if (m_PaletteBuffer == null || m_PaletteBuffer.count != m_PaletteCount)
+            {
+                ReleasePaletteBuffer();
+                m_PaletteBuffer = new GraphicsBuffer(
+                    GraphicsBuffer.Target.Structured,
+                    m_PaletteCount,
+                    sizeof(float) * 8);
+            }
+
+            m_PaletteBuffer.SetData(m_PaletteEntries, 0, 0, m_PaletteCount);
+        }
+
+        private static int CalculatePaletteSettingsHash(
+            Gradient[] gradients,
+            int requestedColorCount)
+        {
+            unchecked
+            {
+                int hash = requestedColorCount;
+                if (gradients == null)
+                {
+                    return hash;
+                }
+
+                hash = hash * 31 + gradients.Length;
+                for (int gradientIndex = 0; gradientIndex < gradients.Length; gradientIndex++)
+                {
+                    Gradient gradient = gradients[gradientIndex];
+                    if (gradient == null)
+                    {
+                        hash *= 31;
+                        continue;
+                    }
+
+                    hash = hash * 31 + (int)gradient.mode;
+                    hash = hash * 31 + (int)gradient.colorSpace;
+
+                    GradientColorKey[] colorKeys = gradient.colorKeys;
+                    hash = hash * 31 + colorKeys.Length;
+                    for (int keyIndex = 0; keyIndex < colorKeys.Length; keyIndex++)
+                    {
+                        hash = hash * 31 + colorKeys[keyIndex].color.GetHashCode();
+                        hash = hash * 31 + colorKeys[keyIndex].time.GetHashCode();
+                    }
+
+                    GradientAlphaKey[] alphaKeys = gradient.alphaKeys;
+                    hash = hash * 31 + alphaKeys.Length;
+                    for (int keyIndex = 0; keyIndex < alphaKeys.Length; keyIndex++)
+                    {
+                        hash = hash * 31 + alphaKeys[keyIndex].alpha.GetHashCode();
+                        hash = hash * 31 + alphaKeys[keyIndex].time.GetHashCode();
+                    }
+                }
+
+                return hash;
+            }
+        }
+
+        private static Vector4 SrgbToLab(Color color)
+        {
+            float r = Mathf.Pow(Mathf.Clamp01(color.r), 2.2f);
+            float g = Mathf.Pow(Mathf.Clamp01(color.g), 2.2f);
+            float b = Mathf.Pow(Mathf.Clamp01(color.b), 2.2f);
+
+            float x = (0.4124564f * r + 0.3575761f * g + 0.1804375f * b) / 0.95047f;
+            float y = 0.2126729f * r + 0.7151522f * g + 0.0721750f * b;
+            float z = (0.0193339f * r + 0.1191920f * g + 0.9503041f * b) / 1.08883f;
+
+            float fx = LabCurve(x);
+            float fy = LabCurve(y);
+            float fz = LabCurve(z);
+
+            return new Vector4(
+                116f * fy - 16f,
+                500f * (fx - fy),
+                200f * (fy - fz),
+                0f);
+        }
+
+        private static float LabCurve(float value)
+        {
+            return value > 0.008856f
+                ? Mathf.Pow(Mathf.Max(value, 0f), 1f / 3f)
+                : 7.787f * value + 16f / 116f;
         }
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -209,7 +414,7 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
                 if (m_UsePaletteMapping)
                 {
                     m_PaletteMaterial.SetInt(PaletteCountId, m_PaletteCount);
-                    m_PaletteMaterial.SetVectorArray(PaletteColorsId, m_PaletteColors);
+                    m_PaletteMaterial.SetBuffer(PaletteEntriesId, m_PaletteBuffer);
                     Blitter.BlitCameraTexture(
                         cmd,
                         m_LowResolutionTexture,
@@ -233,7 +438,14 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
             m_LowResolutionTexture = null;
             m_PaletteTexture?.Release();
             m_PaletteTexture = null;
+            ReleasePaletteBuffer();
             CoreUtils.Destroy(m_PaletteMaterial);
+        }
+
+        private void ReleasePaletteBuffer()
+        {
+            m_PaletteBuffer?.Release();
+            m_PaletteBuffer = null;
         }
     }
 }
