@@ -90,27 +90,22 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
 
     private static Gradient[] CreateDefaultGradients()
     {
-        const int hueCount = 12;
-        var gradients = new Gradient[hueCount + 1];
+        const int hueCount = 8;
+        var gradients = new Gradient[hueCount];
 
-        // Twelve high-saturation value ramps cover the hue wheel. Keeping the
-        // hue fixed while varying value produces vivid shadows, midtones, and
-        // highlights instead of the desaturated center of a uniform RGB grid.
+        // Dark, chromatic ramps deliberately avoid a continuous neutral axis.
+        // This prevents a low-saturation scene from collapsing into gray while
+        // retaining enough value steps to separate geometry and materials.
         for (int hueIndex = 0; hueIndex < hueCount; hueIndex++)
         {
             float hue = hueIndex / (float)hueCount;
             gradients[hueIndex] = CreateGradient(
-                Color.HSVToRGB(hue, 0.85f, 0.10f),
-                Color.HSVToRGB(hue, 1.00f, 0.58f),
-                Color.HSVToRGB(hue, 0.92f, 1.00f));
+                Color.HSVToRGB(hue, 0.70f, 0.05f),
+                Color.HSVToRGB(hue, 0.92f, 0.20f),
+                Color.HSVToRGB(hue, 0.88f, 0.42f),
+                Color.HSVToRGB(hue, 0.68f, 0.68f),
+                Color.HSVToRGB(hue, 0.36f, 0.86f));
         }
-
-        // Preserve reliable matches for neutral lighting, fog, shadows, and UI.
-        gradients[hueCount] = CreateGradient(
-            new Color32(4, 4, 7, 255),
-            new Color32(48, 48, 58, 255),
-            new Color32(128, 132, 142, 255),
-            new Color32(238, 242, 246, 255));
 
         return gradients;
     }
