@@ -36,7 +36,10 @@ namespace Vampire.UI
         {
             unit = GetComponentInParent<Unit>();
             if (unit != null)
+            {
                 unit.Damaged += OnDamaged;
+                unit.Healed += OnHealed;
+            }
         }
 
         private void Start()
@@ -62,10 +65,18 @@ namespace Vampire.UI
         private void OnDisable()
         {
             if (unit != null)
+            {
                 unit.Damaged -= OnDamaged;
+                unit.Healed -= OnHealed;
+            }
         }
 
-        private void OnDamaged(Unit source, int amount)
+        private void OnDamaged(Unit source, int amount) => ShowAndRefresh();
+
+        private void OnHealed(int amount) => ShowAndRefresh();
+
+        // 刷新血条填充并短暂显示。
+        private void ShowAndRefresh()
         {
             RefreshFillAmount();
             hideAt = Time.unscaledTime + visibleDuration;
