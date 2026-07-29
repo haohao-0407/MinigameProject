@@ -17,7 +17,7 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
     [Header("Lab Palette Mapping")]
     [SerializeField] private bool m_EnablePaletteMapping = true;
     [SerializeField] private Shader m_PaletteShader;
-    [SerializeField, Min(1)] private int m_GradientPaletteSize = 216;
+    [SerializeField, Min(1)] private int m_GradientPaletteSize = 64;
     [SerializeField] private Gradient[] m_PaletteGradients = CreateDefaultGradients();
 
     [Header("Cameras")]
@@ -90,24 +90,36 @@ public sealed class PixelArtRendererFeature : ScriptableRendererFeature
 
     private static Gradient[] CreateDefaultGradients()
     {
-        const int hueCount = 8;
-        var gradients = new Gradient[hueCount];
-
-        // Dark, chromatic ramps deliberately avoid a continuous neutral axis.
-        // This prevents a low-saturation scene from collapsing into gray while
-        // retaining enough value steps to separate geometry and materials.
-        for (int hueIndex = 0; hueIndex < hueCount; hueIndex++)
+        // "Moonlit gothic" palette for the Vampires vs. Vampire Hunters battlefield.
+        // Each ramp is a dark -> light value ladder inside a single hue family so
+        // the Lab nearest-colour mapping preserves luminance structure. The set is
+        // chosen to cover every colour family that shows up in the night scene
+        // (sky, moonlight, blood, foliage, earth, firelight, stone) so incoming
+        // pixels map onto a same-hue entry instead of drifting to a wrong hue.
+        return new[]
         {
-            float hue = hueIndex / (float)hueCount;
-            gradients[hueIndex] = CreateGradient(
-                Color.HSVToRGB(hue, 0.70f, 0.05f),
-                Color.HSVToRGB(hue, 0.92f, 0.20f),
-                Color.HSVToRGB(hue, 0.88f, 0.42f),
-                Color.HSVToRGB(hue, 0.68f, 0.68f),
-                Color.HSVToRGB(hue, 0.36f, 0.86f));
-        }
+            // Night sky / deep shadow (indigo -> pale lilac).
+            CreateGradient(Hex("0B0A1A"), Hex("241C3C"), Hex("453A6B"), Hex("7B6FA6"), Hex("B9AFD6")),
+            // Moonlight / hunter steel (cold teal -> ice white).
+            CreateGradient(Hex("0C171B"), Hex("1E3A42"), Hex("39707C"), Hex("77AEB6"), Hex("CFE6E8")),
+            // Vampire blood (near-black maroon -> dusty rose).
+            CreateGradient(Hex("1A0608"), Hex("4A0F14"), Hex("8C1F26"), Hex("C24B4E"), Hex("E39B99")),
+            // Vampire arcane accent (deep violet -> orchid).
+            CreateGradient(Hex("150A22"), Hex("34164F"), Hex("5E2E86"), Hex("9260BE"), Hex("C9A8E4")),
+            // Foliage / grass (dark forest -> sage).
+            CreateGradient(Hex("0A1408"), Hex("1B3314"), Hex("356026"), Hex("5E8E45"), Hex("A6C285")),
+            // Earth / rock / leather (dark umber -> tan).
+            CreateGradient(Hex("140D07"), Hex("35230F"), Hex("5E401F"), Hex("8F6A3E"), Hex("C4A277")),
+            // Firelight / candle highlight (warm amber -> gold).
+            CreateGradient(Hex("1E0E03"), Hex("5A2A08"), Hex("9C5814"), Hex("D68F2E"), Hex("F4CE7A")),
+            // Cool neutral stone / bone (kept slightly blue to avoid dead grey).
+            CreateGradient(Hex("0E1013"), Hex("262B31"), Hex("4B535C"), Hex("828C96"), Hex("C6CDD4")),
+        };
+    }
 
-        return gradients;
+    private static Color Hex(string rgb)
+    {
+        return ColorUtility.TryParseHtmlString("#" + rgb, out Color color) ? color : Color.magenta;
     }
 
     private static Gradient CreateGradient(params Color[] colors)
