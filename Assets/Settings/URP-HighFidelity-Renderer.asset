@@ -1,5 +1,25 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4740513169587545931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d613f08f173d4dd895bb07b3230baa9, type: 3}
+  m_Name: Volumetric Cloud
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  injectionPoint: 550
+  fetchColorBuffer: 1
+  requirements: 4
+  passMaterial: {fileID: 2100000, guid: cb575af466464614488c5741c758632d, type: 2}
+  passIndex: 0
+  bindDepthStencilAttachment: 0
+  m_Version: 1
 --- !u!114 &-1878332245247344467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,7 +74,9 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -1878332245247344467}
   - {fileID: 1992900202861619104}
-  m_RendererFeatureMap: adc0de57c6d2eee5a0e75ef82c34a81b
+  - {fileID: -4740513169587545931}
+  - {fileID: 8982600430295543977}
+  m_RendererFeatureMap: adc0de57c6d2eee5a0e75ef82c34a81bb558ac79635036bea97009df7f9ba87c
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -384,3 +406,25 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   m_ApplyToSceneView: 0
+--- !u!114 &8982600430295543977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6486f4e2e8f8714d85879b5df9bec03, type: 3}
+  m_Name: VolumeCloud
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  Set:
+    CloudMaterial: {fileID: 2100000, guid: e3975ae3c2ddc7b47aaf9ed2d908f731, type: 2}
+    RenderQueue: 400
+    BlueNoiseTex: {fileID: 2800000, guid: 596c3ab6823353c4fbe7107195c56b96, type: 3}
+    RTScale: 1
+    FrameBlocking: 1
+    ShieldWidth: 200
+    IsFrameDebug: 0
+    FrameDebug: 16
