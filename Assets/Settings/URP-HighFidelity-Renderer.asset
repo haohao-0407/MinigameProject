@@ -142,7 +142,7 @@ MonoBehaviour:
   m_TargetHeight: 180
   m_EnablePaletteMapping: 1
   m_PaletteShader: {fileID: 0}
-  m_GradientPaletteSize: 48
+  m_GradientPaletteSize: 128
   m_PaletteGradients:
   - serializedVersion: 2
     key0: {r: 0.043137256, g: 0.039215688, b: 0.101960786, a: 1}
@@ -423,8 +423,8 @@ MonoBehaviour:
     CloudMaterial: {fileID: 2100000, guid: e3975ae3c2ddc7b47aaf9ed2d908f731, type: 2}
     RenderQueue: 400
     BlueNoiseTex: {fileID: 2800000, guid: 596c3ab6823353c4fbe7107195c56b96, type: 3}
-    RTScale: 1
+    RTScale: 0.906
     FrameBlocking: 1
-    ShieldWidth: 200
+    ShieldWidth: 300
     IsFrameDebug: 0
     FrameDebug: 16
