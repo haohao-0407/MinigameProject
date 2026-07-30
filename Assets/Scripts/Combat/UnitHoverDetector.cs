@@ -7,7 +7,7 @@ public class UnitHoverDetector : MonoBehaviour
     [Header("Raycast")]
     [SerializeField] private Camera worldCamera;
 
-    [Tooltip("ÄÜ¹»±»Êó±ê¼ì²âµÄÎïÀí²ã¡£Ä¬ÈÏ Everything¡£")]
+    [Tooltip("ï¿½Ü¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã¡£Ä¬ï¿½ï¿½ Everythingï¿½ï¿½")]
     [SerializeField] private LayerMask detectionMask = ~0;
 
     [SerializeField] private float maxDistance = 1000f;
@@ -16,8 +16,8 @@ public class UnitHoverDetector : MonoBehaviour
     [SerializeField] private bool showDebugLog;
 
     /// <summary>
-    /// µ±Ç°Êó±êÖ¸ÏòµÄµ¥Î»¡£
-    /// Ã»ÓÐÖ¸Ïòµ¥Î»Ê±Îª null¡£
+    /// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Äµï¿½Î»ï¿½ï¿½
+    /// Ã»ï¿½ï¿½Ö¸ï¿½ï¿½Î»Ê±Îª nullï¿½ï¿½
     /// </summary>
     public Unit HoverUnit { get; private set; }
 
@@ -34,7 +34,7 @@ public class UnitHoverDetector : MonoBehaviour
 
     private void DetectUnitUnderMouse()
     {
-        // Êó±ê´¦ÓÚUIÉÏÊ±£¬²»¼ì²â³¡¾°ÖÐµÄµ¥Î»¡£
+        // ï¿½ï¿½ê´¦ï¿½ï¿½UIï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â³¡ï¿½ï¿½ï¿½ÐµÄµï¿½Î»ï¿½ï¿½
         if (EventSystem.current != null &&
             EventSystem.current.IsPointerOverGameObject())
         {
@@ -56,11 +56,11 @@ public class UnitHoverDetector : MonoBehaviour
         Ray ray = worldCamera.ScreenPointToRay(Input.mousePosition);
 
         /*
-         * Ê¹ÓÃ RaycastAll£¬¶ø²»ÊÇÆÕÍ¨ Raycast¡£
+         * Ê¹ï¿½ï¿½ RaycastAllï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ Raycastï¿½ï¿½
          *
-         * Ô­Òò£º
-         * Êó±êÉäÏß¿ÉÄÜÍ¬Ê±´©¹ý½ÇÉ«Åö×²ÌåºÍµØÃæÅö×²Ìå¡£
-         * ÎÒÃÇ±éÀúÈ«²¿ÃüÖÐ½á¹û£¬Ö÷¶¯Ñ°ÕÒ´ø Unit µÄÎïÌå¡£
+         * Ô­ï¿½ï¿½
+         * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½×²ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½å¡£
+         * ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½Ò´ï¿½ Unit ï¿½ï¿½ï¿½ï¿½ï¿½å¡£
          */
         RaycastHit[] hits = Physics.RaycastAll(
             ray,
@@ -91,7 +91,7 @@ public class UnitHoverDetector : MonoBehaviour
 
     private void SetHoverUnit(Unit newUnit)
     {
-        // µ¥Î»Ã»ÓÐ¸Ä±äÊ±£¬²»ÖØ¸´´¦Àí¡£
+        // ï¿½ï¿½Î»Ã»ï¿½Ð¸Ä±ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (HoverUnit == newUnit)
             return;
 
