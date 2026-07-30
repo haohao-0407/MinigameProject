@@ -1,4 +1,4 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuUI : UIWindow
@@ -28,8 +28,7 @@ public class MainMenuUI : UIWindow
     {
         Debug.Log("Start Click");
 
-        SceneLoader.Instance.LoadScene("SampleScene");
-        //UIManager.Instance.Open(UIPanelType.StageSelect);
+        UIManager.Instance.Open(UIPanelType.StageSelect);
     }
 
     private void OnSettingsClicked()
@@ -42,7 +41,8 @@ public class MainMenuUI : UIWindow
         Application.Quit();
     }
 
-    public override void CloseImmediate() //初始化专用。
+    // initialization-only; keep menu visible.
+    public override void CloseImmediate()
     {
         return;
     }
