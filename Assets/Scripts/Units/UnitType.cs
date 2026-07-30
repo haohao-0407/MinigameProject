@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Vampire.Units
 {
@@ -9,6 +9,7 @@ namespace Vampire.Units
     {
         [Header("标识")]
         public string displayName = "Unit";
+        public Sprite portrait;
 
         [Header("战斗属性")]
         public int maxHealth = 20;        // 最大生命值

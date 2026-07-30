@@ -1,15 +1,25 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Vampire.Units;
 
 public class BattleHUD : MonoBehaviour
 {
+    [Header("Avatar")]
+    [SerializeField] private Image avatarImage;
+
     [Header("Selected Unit")]
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text staminaText;
     [SerializeField] private TMP_Text factionText;
     [SerializeField] private TMP_Text skillText;
+
+    [Header("Bars")]
+    [SerializeField] private Image hpBarFill;
+    [SerializeField] private TMP_Text hpLabelText;
+    [SerializeField] private Image staminaBarFill;
+    [SerializeField] private TMP_Text staminaLabelText;
 
     [Header("Turn")]
     [SerializeField] private TMP_Text turnText;
@@ -21,7 +31,7 @@ public class BattleHUD : MonoBehaviour
     public void SetTurn(int turn)
     {
         if (turnText != null)
-            turnText.text = $"Turn {turn}";
+            turnText.text = $"Round {turn}";
     }
 
     public void SetUnit(Unit unit)
@@ -45,6 +55,21 @@ public class BattleHUD : MonoBehaviour
             return;
         }
 
+        // avatar
+        if (avatarImage != null && currentUnit.Type != null)
+        {
+            Sprite portrait = currentUnit.Type.portrait;
+            if (portrait != null)
+            {
+                avatarImage.sprite = portrait;
+                avatarImage.enabled = true;
+            }
+            else
+            {
+                avatarImage.enabled = false;
+            }
+        }
+
         if (nameText != null)
         {
             if (currentUnit.Type != null)
@@ -53,17 +78,40 @@ public class BattleHUD : MonoBehaviour
                 nameText.text = currentUnit.name;
         }
 
-        if (hpText != null)
+        // HP bar
+        if (hpBarFill != null && currentUnit.Type != null)
         {
-            hpText.text =
-                $"HP: {currentUnit.CurrentHealth}";
+            float ratio = Mathf.Clamp01((float)currentUnit.CurrentHealth / currentUnit.Type.maxHealth);
+            hpBarFill.fillAmount = ratio;
         }
 
-        if (staminaText != null)
+        if (hpLabelText != null)
         {
-            staminaText.text =
-                $"AP: {currentUnit.CurrentStamina}";
+            hpLabelText.text = currentUnit.Type != null
+                ? $"{currentUnit.CurrentHealth}/{currentUnit.Type.maxHealth}"
+                : $"{currentUnit.CurrentHealth}";
         }
+
+        // Stamina bar
+        if (staminaBarFill != null && currentUnit.Type != null)
+        {
+            float ratio = Mathf.Clamp01((float)currentUnit.CurrentStamina / currentUnit.Type.maxStamina);
+            staminaBarFill.fillAmount = ratio;
+        }
+
+        if (staminaLabelText != null)
+        {
+            staminaLabelText.text = currentUnit.Type != null
+                ? $"{currentUnit.CurrentStamina}/{currentUnit.Type.maxStamina}"
+                : $"{currentUnit.CurrentStamina}";
+        }
+
+        // legacy text
+        if (hpText != null)
+            hpText.text = $"HP: {currentUnit.CurrentHealth}";
+
+        if (staminaText != null)
+            staminaText.text = $"AP: {currentUnit.CurrentStamina}";
 
         if (factionText != null)
         {
@@ -85,6 +133,9 @@ public class BattleHUD : MonoBehaviour
 
     private void ClearUnitInformation()
     {
+        if (avatarImage != null)
+            avatarImage.enabled = false;
+
         if (nameText != null)
             nameText.text = string.Empty;
 
@@ -94,24 +145,30 @@ public class BattleHUD : MonoBehaviour
         if (staminaText != null)
             staminaText.text = string.Empty;
 
+        if (hpBarFill != null)
+            hpBarFill.fillAmount = 0f;
+
+        if (hpLabelText != null)
+            hpLabelText.text = string.Empty;
+
+        if (staminaBarFill != null)
+            staminaBarFill.fillAmount = 0f;
+
+        if (staminaLabelText != null)
+            staminaLabelText.text = string.Empty;
+
         if (factionText != null)
             factionText.text = string.Empty;
 
         if (skillText != null)
             skillText.text = string.Empty;
 
-        /*
-         * turnText ����ա�
-         * ��Ϊû��ѡ�е�λʱ����ǰ�غ�������ȻӦ����ʾ��
-         */
+        // turnText retained -- turn number stays visible even when no unit is selected.
     }
 
     private string GetSkillInfo()
     {
-        /*
-         * Unit ��ʱû�й��� SkillController��
-         * �����ȱ���ռλ���ݡ�
-         */
+        // Skill system not yet wired to Unit -- placeholder.
         return "Skill Ready";
     }
 }
