@@ -22,6 +22,9 @@ namespace Vampire.UI.UI2
         [Tooltip("TurnManager（留空自动查找）")]
         [SerializeField] private TurnManager turnManager;
 
+        [Tooltip("顶部 BattleHUD（留空则自动查找；UI2 信息面板会同步显示它当前展示的单位，包括悬停/锁定的敌人）")]
+        [SerializeField] private BattleHUD battleHUD;
+
         [Tooltip("点击音效（留空则不播放）")]
         [SerializeField] private AudioSource clickAudioSource;
 
@@ -38,13 +41,14 @@ namespace Vampire.UI.UI2
         [SerializeField] private Color selectedBorderColor = new Color(0.2f, 0.9f, 0.5f, 1f);
 
         // ---- 左侧信息面板元素（按名称查找） ----
-        private Text damageText;            // "伤害：" 标签文本（UGUI Text，非 TMP）
-        private Text speedText;             // "速度："
-        private Text hpText;                // "xue量：" 标签
-        private Text staminaText;           // "ti力：" 标签
+        // 注意：项目中文本组件统一使用 TextMeshPro (TMP_Text)，不是 UGUI Text。
+        private TMP_Text damageText;        // "伤害" 标签文本
+        private TMP_Text speedText;         // "速度"
+        private TMP_Text hpText;            // "血量/xue量" 标签
+        private TMP_Text staminaText;       // "体力/ti力" 标签
 
-        private Image hpBar;               // HP 进度条 Image（Filled 类型）
-        private Image staminaBar;          // 体力进度条 Image（Filled 类型）
+        private Slider hpBar;              // HP 进度条（Slider，包含 Fill Image）
+        private Slider staminaBar;         // 体力进度条（Slider，包含 Fill Image）
 
         // ---- 道具槽 ----
         private ItemSlotUI[] itemSlots = new ItemSlotUI[3];
@@ -55,6 +59,7 @@ namespace Vampire.UI.UI2
 
         // ---- 状态 ----
         private Unit selectedUnit;
+        private Unit displayedUnit;        // 当前信息面板实际显示的单位（可能是悬停敌人）
         private List<CharacterCard> characterCards = new List<CharacterCard>();
         private float nextSortTime;
 
@@ -72,6 +77,9 @@ namespace Vampire.UI.UI2
             if (turnManager == null)
                 turnManager = FindObjectOfType<TurnManager>();
 
+            if (battleHUD == null)
+                battleHUD = FindObjectOfType<BattleHUD>();
+
             BuildCharacterList();
             SelectUnit(turnManager?.CurrentUnit);
         }
@@ -85,9 +93,24 @@ namespace Vampire.UI.UI2
                 nextSortTime = Time.time + 0.5f;
             }
 
-            // 实时刷新左侧信息面板（跟随当前选中）
-            if (selectedUnit != null)
-                RefreshInfoPanel(selectedUnit);
+            // 实时刷新信息面板：优先同步 BattleHUD 当前显示的单位
+            //（鼠标悬停或 Ctrl+点击锁定的单位，可能是敌人）
+            Unit target = GetCurrentDisplayUnit();
+            if (target != null)
+                RefreshInfoPanel(target);
+        }
+
+        /// <summary>
+        /// 获取信息面板当前应该显示的单位。
+        /// 优先级：BattleHUD 当前显示的单位 > 玩家选中的单位。
+        /// 这样 UI2 就能像顶部 UI 一样读取现在选择/悬停的敌人数据。
+        /// </summary>
+        Unit GetCurrentDisplayUnit()
+        {
+            if (battleHUD != null && battleHUD.CurrentDisplayedUnit != null)
+                return battleHUD.CurrentDisplayedUnit;
+
+            return selectedUnit;
         }
 
         // -----------------------------------------------------------------
@@ -96,63 +119,62 @@ namespace Vampire.UI.UI2
 
         void ResolveReferences()
         {
-            // UI2 结构: Image(主面板) > Image(2)[右侧+信息] | Image(1)[中间选角]
+            // UI2 实际结构（SampleScene）：
+            // UI2 (Canvas)
+            //   └ Image (主面板，fileID 1275423618)
+            //       ├ Image (信息面板，fileID 1078827093)  ← 伤害/速度/血量/体力条
+            //       └ Image (1) (角色选择区，fileID 1105883273) ← 中间角色列表
             var rootPanel = transform.GetChild(0); // Image (主面板)
 
-            // --- 左侧信息面板 = rootPanel 的第1个子 (Image fid=1078827093) ---
-            Transform leftPanel = null;
-            Transform middlePanel = null;
-            Transform rightPanel = null;
+            Transform infoPanel = null;
+            Transform characterSelectPanel = null;
 
             for (int i = 0; i < rootPanel.childCount; i++)
             {
                 var child = rootPanel.GetChild(i);
-                if (i == 0) leftPanel = child;
-                else if (i == 1) middlePanel = child;
-                else if (i == 2) rightPanel = child;
+                if (i == 0) infoPanel = child;
+                else if (i == 1) characterSelectPanel = child;
             }
 
-            // 右侧面板 (Image 2) 包含属性标签和条 + 道具槽
-            if (rightPanel != null)
+            // 信息面板包含属性标签、进度条和道具槽
+            if (infoPanel != null)
             {
-                // 查找 UGUI Text 组件（标签："伤害：" / "速度：" / "xue量：" / "ti力："）
-                // 注意：这些是普通 UnityEngine.UI.Text，不是 TextMeshPro
-                var labels = rightPanel.GetComponentsInChildren<Text>(true);
+                // 查找 TextMeshPro 标签（中/英都支持）
+                // 项目中文本组件统一是 TMP_Text，不是 UnityEngine.UI.Text。
+                var labels = infoPanel.GetComponentsInChildren<TMP_Text>(true);
                 foreach (var t in labels)
                 {
-                    if (t.text.Contains("伤害")) damageText = t;
-                    else if (t.text.Contains("速度")) speedText = t;
-                    else if (t.text.Contains("xue") || t.text.Contains("血")) hpText = t;
-                    else if (t.text.Contains("ti") || t.text.Contains("体")) staminaText = t;
+                    string txt = t.text;
+                    if (txt.Contains("伤害") || txt.Contains("Damage")) damageText = t;
+                    else if (txt.Contains("速度") || txt.Contains("Speed")) speedText = t;
+                    else if (txt.Contains("xue") || txt.Contains("血") || txt.Contains("HP") || txt.Contains("Health")) hpText = t;
+                    else if (txt.Contains("ti") || txt.Contains("体") || txt.Contains("AP") || txt.Contains("Stamina")) staminaText = t;
                 }
 
-                // 属性条 Images：只有 HP 和体力用 Filled 进度条
-                // 伤害和速度只用文字显示，不绑进度条
-                var images = rightPanel.GetComponentsInChildren<Image>(true);
-                List<Image> barImages = new List<Image>();
-                foreach (var img in images)
+                // 属性条：场景里用的是 Slider（HPslider / SPslider）。
+                // 伤害和速度只用文字显示，不绑进度条。
+                var sliders = infoPanel.GetComponentsInChildren<Slider>(true);
+                List<Slider> barSliders = new List<Slider>();
+                foreach (var s in sliders)
                 {
-                    if (img.transform == rightPanel) continue;
-                    if (img.type == Image.Type.Filled)
-                        barImages.Add(img);
+                    if (s.transform == infoPanel) continue;
+                    barSliders.Add(s);
                 }
-                // Filled 类型的前2个作为 HP 条和体力条
-                if (barImages.Count >= 2)
+                // 前2个 Slider 作为 HP 条和体力条
+                if (barSliders.Count >= 2)
                 {
-                    hpBar = barImages[0];
-                    staminaBar = barImages[1];
+                    hpBar = barSliders[0];
+                    staminaBar = barSliders[1];
                 }
 
                 // 道具槽：找 mask 下的 Content 以外的底部 Image 区域
-                // 或直接按名称/位置找最后几个 Image
-                var mask = rightPanel.Find("mask");
+                var mask = infoPanel.Find("mask");
                 if (mask != null)
                 {
-                    // mask 之外的底部区域就是道具槽
                     int slotIndex = 0;
-                    for (int i = 0; i < rightPanel.childCount && slotIndex < 3; i++)
+                    for (int i = 0; i < infoPanel.childCount && slotIndex < 3; i++)
                     {
-                        var c = rightPanel.GetChild(i);
+                        var c = infoPanel.GetChild(i);
                         if (c == mask) continue;
                         var slot = c.GetComponent<ItemSlotUI>();
                         if (slot == null) slot = c.gameObject.AddComponent<ItemSlotUI>();
@@ -162,15 +184,15 @@ namespace Vampire.UI.UI2
             }
 
             // 中间角色选择区 (Image 1) → ScrollRect → viewport → mask → Content
-            if (middlePanel != null)
+            if (characterSelectPanel != null)
             {
-                var scrollRect = middlePanel.GetComponentInChildren<ScrollRect>(true);
+                var scrollRect = characterSelectPanel.GetComponentInChildren<ScrollRect>(true);
                 if (scrollRect != null)
                     characterListContent = scrollRect.content;
                 else
                 {
                     // fallback: 直接找 mask > Content
-                    var m = middlePanel.Find("mask");
+                    var m = characterSelectPanel.Find("mask");
                     if (m != null) characterListContent = m.Find("Content") as RectTransform;
                 }
             }
@@ -313,20 +335,18 @@ namespace Vampire.UI.UI2
             if (unit == null || !unit.IsAlive) return;
 
             selectedUnit = unit;
-            RefreshInfoPanel(unit);
 
-            // 更新卡片选中状态
+            // 更新卡片选中状态（仅在玩家阵营单位之间切换）
             foreach (var card in characterCards)
             {
                 if (card != null)
                     card.SetSelected(card.Unit == unit);
             }
 
-            // 更新道具槽
-            RefreshItemSlots(unit);
-
             // 播放点击音效
             PlayClickSound();
+
+            // 信息面板刷新由 Update 统一处理，以便同步 BattleHUD/悬停单位
         }
 
         // -----------------------------------------------------------------
@@ -337,6 +357,8 @@ namespace Vampire.UI.UI2
         {
             if (unit == null || unit.Type == null) return;
 
+            displayedUnit = unit;
+
             float hpRatio = Mathf.Clamp01((float)unit.CurrentHealth / unit.Type.maxHealth);
             float staminaRatio = Mathf.Clamp01((float)unit.CurrentStamina / unit.Type.maxStamina);
 
@@ -344,18 +366,30 @@ namespace Vampire.UI.UI2
             UpdateBar(hpBar, hpRatio);
             UpdateBar(staminaBar, staminaRatio);
 
-            // 伤害和速度只用文字显示
-            if (damageText != null) damageText.text = $"伤害：{unit.Type.attack}";
-            if (speedText != null) speedText.text = $"速度：{unit.Type.speed:F1}";
+            // 伤害和速度只用文字显示（使用英文，避免当前字体缺少中文字形导致方块）
+            if (damageText != null) damageText.text = $"Damage:{unit.Type.attack}";
+            if (speedText != null) speedText.text = $"Speed:{unit.Type.speed:F1}";
             // 血量和体力的标签也更新为带数值的文字
-            if (hpText != null) hpText.text = $"xue量：{unit.CurrentHealth}/{unit.Type.maxHealth}";
-            if (staminaText != null) staminaText.text = $"ti力：{unit.CurrentStamina}/{unit.Type.maxStamina}";
+            if (hpText != null) hpText.text = $"Health:{unit.CurrentHealth}/{unit.Type.maxHealth}";
+            if (staminaText != null) staminaText.text = $"Stamina:{unit.CurrentStamina}/{unit.Type.maxStamina}";
+
+            // 敌人没有背包，显示敌人时清空道具槽；显示玩家单位时刷新道具槽
+            if (unit.Faction != turnManager?.PlayerFaction)
+                ClearItemSlots();
+            else
+                RefreshItemSlots(unit);
         }
 
-        static void UpdateBar(Image bar, float fillAmount)
+        void ClearItemSlots()
+        {
+            for (int i = 0; i < itemSlots.Length; i++)
+                if (itemSlots[i] != null) itemSlots[i].Clear();
+        }
+
+        static void UpdateBar(Slider bar, float fillAmount)
         {
             if (bar == null) return;
-            bar.fillAmount = fillAmount;
+            bar.value = fillAmount;
         }
 
         // -----------------------------------------------------------------
