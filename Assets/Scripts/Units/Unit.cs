@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Vampire.Combat;
 using Vampire.Core;
+using Vampire.Items;
 
 namespace Vampire.Units
 {
@@ -13,9 +14,11 @@ namespace Vampire.Units
     {
         [SerializeField] private UnitType type;
         [SerializeField] private Faction faction = Faction.VampireHunter;
+        [SerializeField] private Inventory inventory;  // 背包（可选组件）
 
         public UnitType Type => type;
         public Faction Faction => faction;
+        public Inventory Inventory => inventory;  // 可能为 null（无背包的单位如敌人）
         public int CurrentHealth { get; private set; }
         public int CurrentStamina { get; private set; }
         public bool IsAlive => CurrentHealth > 0;

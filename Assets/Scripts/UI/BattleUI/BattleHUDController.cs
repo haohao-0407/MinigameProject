@@ -10,7 +10,7 @@ public class BattleHUDController : MonoBehaviour
     [SerializeField] private UnitHoverDetector hoverDetector;
 
     [Header("Input")]
-    [Tooltip("鼠标右键解除信息锁定。")]
+    [Tooltip("Ctrl+左键点击单位锁定显示，点击空地解除锁定。")]
     [SerializeField] private bool rightClickUnlock = true;
 
     // 用户点击后锁定显示的单位。
@@ -128,19 +128,13 @@ public class BattleHUDController : MonoBehaviour
 
     private void HandleMouseInput()
     {
-        Unit hoverUnit = hoverDetector.HoverUnit;
-
-        // 左键点击单位：锁定该单位的信息。
-        if (Input.GetMouseButtonDown(0) && hoverUnit != null)
+        // Ctrl+左键点击单位：锁定该单位的信息；Ctrl+左键点击空地：解除锁定。
+        if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
         {
+            Unit hoverUnit = hoverDetector.HoverUnit;
             lockedUnit = hoverUnit;
-            ShowUnit(lockedUnit);
-        }
-
-        // 右键：解除锁定。
-        if (rightClickUnlock && Input.GetMouseButtonDown(1))
-        {
-            lockedUnit = null;
+            if (lockedUnit != null)
+                ShowUnit(lockedUnit);
         }
     }
 

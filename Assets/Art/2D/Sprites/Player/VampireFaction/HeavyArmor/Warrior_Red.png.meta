@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e21dfadb527a5e348bbd0b5cd6e19c84
+guid: 7a80f7d5f30a71e40aeb272003adbc4f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Warrior_Blue_0
+      name: Warrior_Red_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 182201c4d508d0842bb10133faf90343
-      internalID: -374719595
+      spriteID: 70c506b53bd90534da21bd6aec81e9ec
+      internalID: 871343599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_1
+      name: Warrior_Red_1
       rect:
         serializedVersion: 2
         x: 192
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b3278171501b4dd47928a7aed5c52ea1
-      internalID: -2012071236
+      spriteID: 76fef3dd99d287b4981d6d1144d6b3e7
+      internalID: 85946451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_2
+      name: Warrior_Red_2
       rect:
         serializedVersion: 2
         x: 384
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 114abd87a8d74084ba4ca22dcf274fa9
-      internalID: 1925339964
+      spriteID: c11d1b8a6ba23f7488761888a2f967bc
+      internalID: -1911880968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_3
+      name: Warrior_Red_3
       rect:
         serializedVersion: 2
         x: 576
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f6ec8785c5e69ac43b6f9425421c7c38
-      internalID: -1083178908
+      spriteID: 4e59ac76672ae6141b4533194a4913cb
+      internalID: 1558460523
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_4
+      name: Warrior_Red_4
       rect:
         serializedVersion: 2
         x: 768
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24c26020784c290459c08c247b115bd2
-      internalID: 621493643
+      spriteID: 7ea6a2adc88a9f041ad135604fea5e17
+      internalID: -137823082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_5
+      name: Warrior_Red_5
       rect:
         serializedVersion: 2
         x: 960
@@ -216,14 +216,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d116b7c0687066b41b1094beff846d4c
-      internalID: -1409627
+      spriteID: 8c6cc816ae9301c4385d5e5ebf105bc9
+      internalID: -1622926338
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_6
+      name: Warrior_Red_6
       rect:
         serializedVersion: 2
         x: 0
@@ -237,14 +237,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: de6d009644b538844892c8f36a73b23a
-      internalID: -261536593
+      spriteID: 4b29a526438c41f49bff7fcb3696bd8d
+      internalID: -1821194826
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_7
+      name: Warrior_Red_7
       rect:
         serializedVersion: 2
         x: 192
@@ -258,14 +258,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e898526b125f1be41a507003a8dc1117
-      internalID: -1016654840
+      spriteID: a8fac9513c5e68d4c82f1a2845576994
+      internalID: 922777881
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_8
+      name: Warrior_Red_8
       rect:
         serializedVersion: 2
         x: 384
@@ -279,14 +279,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76ccc186e51d8a843bb39212c0d61d6f
-      internalID: -2033719962
+      spriteID: ad5f0e575e2834b41aac8897ee543f15
+      internalID: 1754206284
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_9
+      name: Warrior_Red_9
       rect:
         serializedVersion: 2
         x: 576
@@ -300,14 +300,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9f2178082372bd149b84114aac411d7b
-      internalID: -1582491360
+      spriteID: ea1ef9e0ceb9e284fa914382a1801a34
+      internalID: 1166240547
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_10
+      name: Warrior_Red_10
       rect:
         serializedVersion: 2
         x: 768
@@ -321,14 +321,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 024d13bfefc6f1c43a7b0370baa28330
-      internalID: -920509686
+      spriteID: 07b77ceb38f2ee742b1587f8dec099d4
+      internalID: -627198452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_11
+      name: Warrior_Red_11
       rect:
         serializedVersion: 2
         x: 960
@@ -342,14 +342,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ac18c7a30c4c534ba5cb4487f63a8fd
-      internalID: 1429031470
+      spriteID: deab57fcfca28cf4cb937872bf3b922e
+      internalID: -638790543
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_12
+      name: Warrior_Red_12
       rect:
         serializedVersion: 2
         x: 0
@@ -363,14 +363,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7074e070ae2cd24b8362a062ec02865
-      internalID: -1998130673
+      spriteID: d8c2206e4e2e2e847a35f1551e32820a
+      internalID: -2620265
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_13
+      name: Warrior_Red_13
       rect:
         serializedVersion: 2
         x: 192
@@ -384,14 +384,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 500c895e068a2044896437eb8395abd0
-      internalID: -375603959
+      spriteID: 0aca131f8f688f144a926c45e3e45b1c
+      internalID: -2005203566
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_14
+      name: Warrior_Red_14
       rect:
         serializedVersion: 2
         x: 384
@@ -405,14 +405,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 258e0cdaee289cf458f877f9c797f8d7
-      internalID: -2044388543
+      spriteID: a9b5baf2ccef79f4e9549de3459e338e
+      internalID: 1502514284
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_15
+      name: Warrior_Red_15
       rect:
         serializedVersion: 2
         x: 576
@@ -426,14 +426,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00d37108a3def9e4f9f0646d1420cf03
-      internalID: 682504520
+      spriteID: ba01a5725fe1d4144a1a975aab4f5202
+      internalID: 1886192260
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_16
+      name: Warrior_Red_16
       rect:
         serializedVersion: 2
         x: 768
@@ -447,14 +447,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7c68de0ae96183e469fc3e9d85eaea63
-      internalID: 1766642867
+      spriteID: 57c4b805be4855e438c1ea37ebecf9dd
+      internalID: -508376541
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_17
+      name: Warrior_Red_17
       rect:
         serializedVersion: 2
         x: 960
@@ -468,14 +468,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 88063391c0d5b53439fc6de9711dc0c9
-      internalID: 1682114764
+      spriteID: 01bd84d83ae16014c94a692eb9ee24e7
+      internalID: 1091383124
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_18
+      name: Warrior_Red_18
       rect:
         serializedVersion: 2
         x: 0
@@ -489,14 +489,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0195afbb2cc3fdd4d963d6eb24dc2ab4
-      internalID: -2079468599
+      spriteID: 0db3a4428806a024dab7662ca2486ac7
+      internalID: -675055557
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_19
+      name: Warrior_Red_19
       rect:
         serializedVersion: 2
         x: 192
@@ -510,14 +510,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8504de258019ace41829d9106eb59b9c
-      internalID: -1746161637
+      spriteID: 1b7e3888ac5ed7f49a5472d9d6198e87
+      internalID: -1622354793
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_20
+      name: Warrior_Red_20
       rect:
         serializedVersion: 2
         x: 384
@@ -531,14 +531,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f2147ced600421469ee1acd79155609
-      internalID: 895982041
+      spriteID: 6f6f65228100cf140a304f807849e671
+      internalID: 2048439985
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_21
+      name: Warrior_Red_21
       rect:
         serializedVersion: 2
         x: 576
@@ -552,14 +552,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 93a6f8d9c6a420644ba94b0bccc1e82c
-      internalID: -1958853887
+      spriteID: 65ebed28f6fecd84d99ec3831e8881ca
+      internalID: -1473119743
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_22
+      name: Warrior_Red_22
       rect:
         serializedVersion: 2
         x: 768
@@ -573,14 +573,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 499b0f6dc3502cb41aa74e5c51619f33
-      internalID: -970390992
+      spriteID: c0a3be80c7406264689264979312e140
+      internalID: 1144131479
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_23
+      name: Warrior_Red_23
       rect:
         serializedVersion: 2
         x: 960
@@ -594,14 +594,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ce7787069cb21c94ea180a769824a789
-      internalID: 1101143066
+      spriteID: 7c2739d4f1cff004f94c50432e413a0a
+      internalID: 953215053
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_24
+      name: Warrior_Red_24
       rect:
         serializedVersion: 2
         x: 0
@@ -615,14 +615,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 80d63d9ad575db04e93a1928df28deb9
-      internalID: -534523746
+      spriteID: d46531a5218a9874d9f249b1aa08a7e8
+      internalID: 727845904
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_25
+      name: Warrior_Red_25
       rect:
         serializedVersion: 2
         x: 192
@@ -636,14 +636,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db58c3ec88454bf41b9221e13f144029
-      internalID: -169095281
+      spriteID: 5be957411750d6c4181455fd6d598ca4
+      internalID: -507442149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_26
+      name: Warrior_Red_26
       rect:
         serializedVersion: 2
         x: 384
@@ -657,14 +657,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e944383639f475f4e8cfaf97e5e907d7
-      internalID: -1683548723
+      spriteID: 1d350a4c9ec773f4aba9293a17666aa2
+      internalID: -11289289
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_27
+      name: Warrior_Red_27
       rect:
         serializedVersion: 2
         x: 576
@@ -678,14 +678,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 28994a403afcc7448a24dc4e65e86441
-      internalID: 1326839487
+      spriteID: 0c5adf30ff1f5a043a7b54bb5d575c0a
+      internalID: 553235973
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_28
+      name: Warrior_Red_28
       rect:
         serializedVersion: 2
         x: 768
@@ -699,14 +699,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4b52d001b1338040b4601f130b452b8
-      internalID: 2083749862
+      spriteID: dd4629c68e89f844a99d18d6ff3fb8e5
+      internalID: 1891394340
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_29
+      name: Warrior_Red_29
       rect:
         serializedVersion: 2
         x: 960
@@ -720,14 +720,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21993cec2a4313642a82265e179877ee
-      internalID: -590682125
+      spriteID: 579ac1dbb70144f45854d0626835f233
+      internalID: -642036387
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_30
+      name: Warrior_Red_30
       rect:
         serializedVersion: 2
         x: 0
@@ -741,14 +741,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0c2d35104ce99a4ba189564d7fead19
-      internalID: -292142219
+      spriteID: 034f8da1fa617e44ea5289cdd0123cd5
+      internalID: -2089655084
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_31
+      name: Warrior_Red_31
       rect:
         serializedVersion: 2
         x: 192
@@ -762,14 +762,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 222a035c2f3d35348ad7d79fbfbd420a
-      internalID: 1860119291
+      spriteID: 5afefb770396e964da0bd1fe0d62605f
+      internalID: -2097876704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_32
+      name: Warrior_Red_32
       rect:
         serializedVersion: 2
         x: 384
@@ -783,14 +783,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbbb040b2fe20fe4ba06c6b35d84121a
-      internalID: 1861037345
+      spriteID: 565176d8d5e6fb24b88d2c754f4e9f0e
+      internalID: -900006929
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_33
+      name: Warrior_Red_33
       rect:
         serializedVersion: 2
         x: 576
@@ -804,14 +804,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 192ebf7adce3b4944a83cc2b970ae95b
-      internalID: 1143019421
+      spriteID: d87269ea4cb70b4419f55b188a1abc1a
+      internalID: -252990960
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_34
+      name: Warrior_Red_34
       rect:
         serializedVersion: 2
         x: 768
@@ -825,14 +825,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91d3bd2def70418459b9296c19a88925
-      internalID: 1174927475
+      spriteID: d9dde4ceca98e99458a638f63c57be37
+      internalID: -90316793
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_35
+      name: Warrior_Red_35
       rect:
         serializedVersion: 2
         x: 960
@@ -846,14 +846,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7ddae6488dfc4bb4fbd30afd20672a0d
-      internalID: 595119882
+      spriteID: 8649974b3427f434189688e313330689
+      internalID: -1252925945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_36
+      name: Warrior_Red_36
       rect:
         serializedVersion: 2
         x: 0
@@ -867,14 +867,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4ecbf622afbb23548b48013efab37fa5
-      internalID: -639411975
+      spriteID: 27305344dd8c4e34d90e6456e0da3cd8
+      internalID: 1391467696
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_37
+      name: Warrior_Red_37
       rect:
         serializedVersion: 2
         x: 192
@@ -888,14 +888,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0975de97624ec2644b73effa855e69b1
-      internalID: 493556890
+      spriteID: 47ae24197b0d82242b8cb5cec072cf30
+      internalID: -1356325939
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_38
+      name: Warrior_Red_38
       rect:
         serializedVersion: 2
         x: 384
@@ -909,14 +909,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8032039761d104747bff64941a56a1e8
-      internalID: 1690351548
+      spriteID: 3beba7e55820fce439d5c5319982e37d
+      internalID: -498869188
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_39
+      name: Warrior_Red_39
       rect:
         serializedVersion: 2
         x: 576
@@ -930,14 +930,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 180e39bf9e2f6864895c6f68813d86e3
-      internalID: -651394172
+      spriteID: d42a68b703f0cc6408a0cf9f2f87cc02
+      internalID: -1282230093
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_40
+      name: Warrior_Red_40
       rect:
         serializedVersion: 2
         x: 768
@@ -951,14 +951,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2fc554c7b3183448a85d4f9e5820c9e
-      internalID: -2131752155
+      spriteID: c0866bb368cda0c409f488ed88618b42
+      internalID: 2064648018
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_41
+      name: Warrior_Red_41
       rect:
         serializedVersion: 2
         x: 960
@@ -972,14 +972,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dac9d3e6704bceb489b806fb9c7b7230
-      internalID: -1596929441
+      spriteID: dedc0b83578b2924abe6986d779b4f4d
+      internalID: 1265313673
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_42
+      name: Warrior_Red_42
       rect:
         serializedVersion: 2
         x: 0
@@ -993,14 +993,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3594c05956c5d3b4fbd557f38a264d75
-      internalID: -96216775
+      spriteID: 0e8ae855e04853d4aa89ccf096370d50
+      internalID: -544553627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_43
+      name: Warrior_Red_43
       rect:
         serializedVersion: 2
         x: 192
@@ -1014,14 +1014,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 763603c9ae6846044b21d1fa404375a0
-      internalID: 595736209
+      spriteID: 9248cfb6ce1d5df4686443e09315fad5
+      internalID: -329376642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_44
+      name: Warrior_Red_44
       rect:
         serializedVersion: 2
         x: 384
@@ -1035,14 +1035,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ac67b21d311fc248bff1ad8f2236a5b
-      internalID: -951699283
+      spriteID: 2a05be58bc91030468bfc6a93dc2629f
+      internalID: 1467581356
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_45
+      name: Warrior_Red_45
       rect:
         serializedVersion: 2
         x: 576
@@ -1056,14 +1056,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6386058e6b949da4da66963512aca1d9
-      internalID: -322106464
+      spriteID: 0732e31bc8288554f932d05bcc0c0807
+      internalID: 82328379
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_46
+      name: Warrior_Red_46
       rect:
         serializedVersion: 2
         x: 768
@@ -1077,14 +1077,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5b4f0e70c722c4240b44765f2bcbee33
-      internalID: 354228663
+      spriteID: f80a8a82a7ac6a443b735983f8945088
+      internalID: 1688863441
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warrior_Blue_47
+      name: Warrior_Red_47
       rect:
         serializedVersion: 2
         x: 960
@@ -1098,8 +1098,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e88e9574e0781e848be21dacf9494dcb
-      internalID: -1846952065
+      spriteID: 72cedc405358af845b0cd93d6f787579
+      internalID: 1526891281
       vertices: []
       indices: 
       edges: []
@@ -1107,7 +1107,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: a021a71b4aca11640b4d324d3a380038
+    spriteID: 11bef370d8f54b24a89cf74e316b3ed0
     internalID: 0
     vertices: []
     indices: 
@@ -1115,54 +1115,54 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Warrior_Blue_0: -374719595
-      Warrior_Blue_1: -2012071236
-      Warrior_Blue_10: -920509686
-      Warrior_Blue_11: 1429031470
-      Warrior_Blue_12: -1998130673
-      Warrior_Blue_13: -375603959
-      Warrior_Blue_14: -2044388543
-      Warrior_Blue_15: 682504520
-      Warrior_Blue_16: 1766642867
-      Warrior_Blue_17: 1682114764
-      Warrior_Blue_18: -2079468599
-      Warrior_Blue_19: -1746161637
-      Warrior_Blue_2: 1925339964
-      Warrior_Blue_20: 895982041
-      Warrior_Blue_21: -1958853887
-      Warrior_Blue_22: -970390992
-      Warrior_Blue_23: 1101143066
-      Warrior_Blue_24: -534523746
-      Warrior_Blue_25: -169095281
-      Warrior_Blue_26: -1683548723
-      Warrior_Blue_27: 1326839487
-      Warrior_Blue_28: 2083749862
-      Warrior_Blue_29: -590682125
-      Warrior_Blue_3: -1083178908
-      Warrior_Blue_30: -292142219
-      Warrior_Blue_31: 1860119291
-      Warrior_Blue_32: 1861037345
-      Warrior_Blue_33: 1143019421
-      Warrior_Blue_34: 1174927475
-      Warrior_Blue_35: 595119882
-      Warrior_Blue_36: -639411975
-      Warrior_Blue_37: 493556890
-      Warrior_Blue_38: 1690351548
-      Warrior_Blue_39: -651394172
-      Warrior_Blue_4: 621493643
-      Warrior_Blue_40: -2131752155
-      Warrior_Blue_41: -1596929441
-      Warrior_Blue_42: -96216775
-      Warrior_Blue_43: 595736209
-      Warrior_Blue_44: -951699283
-      Warrior_Blue_45: -322106464
-      Warrior_Blue_46: 354228663
-      Warrior_Blue_47: -1846952065
-      Warrior_Blue_5: -1409627
-      Warrior_Blue_6: -261536593
-      Warrior_Blue_7: -1016654840
-      Warrior_Blue_8: -2033719962
-      Warrior_Blue_9: -1582491360
+      Warrior_Red_0: 871343599
+      Warrior_Red_1: 85946451
+      Warrior_Red_10: -627198452
+      Warrior_Red_11: -638790543
+      Warrior_Red_12: -2620265
+      Warrior_Red_13: -2005203566
+      Warrior_Red_14: 1502514284
+      Warrior_Red_15: 1886192260
+      Warrior_Red_16: -508376541
+      Warrior_Red_17: 1091383124
+      Warrior_Red_18: -675055557
+      Warrior_Red_19: -1622354793
+      Warrior_Red_2: -1911880968
+      Warrior_Red_20: 2048439985
+      Warrior_Red_21: -1473119743
+      Warrior_Red_22: 1144131479
+      Warrior_Red_23: 953215053
+      Warrior_Red_24: 727845904
+      Warrior_Red_25: -507442149
+      Warrior_Red_26: -11289289
+      Warrior_Red_27: 553235973
+      Warrior_Red_28: 1891394340
+      Warrior_Red_29: -642036387
+      Warrior_Red_3: 1558460523
+      Warrior_Red_30: -2089655084
+      Warrior_Red_31: -2097876704
+      Warrior_Red_32: -900006929
+      Warrior_Red_33: -252990960
+      Warrior_Red_34: -90316793
+      Warrior_Red_35: -1252925945
+      Warrior_Red_36: 1391467696
+      Warrior_Red_37: -1356325939
+      Warrior_Red_38: -498869188
+      Warrior_Red_39: -1282230093
+      Warrior_Red_4: -137823082
+      Warrior_Red_40: 2064648018
+      Warrior_Red_41: 1265313673
+      Warrior_Red_42: -544553627
+      Warrior_Red_43: -329376642
+      Warrior_Red_44: 1467581356
+      Warrior_Red_45: 82328379
+      Warrior_Red_46: 1688863441
+      Warrior_Red_47: 1526891281
+      Warrior_Red_5: -1622926338
+      Warrior_Red_6: -1821194826
+      Warrior_Red_7: 922777881
+      Warrior_Red_8: 1754206284
+      Warrior_Red_9: 1166240547
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
