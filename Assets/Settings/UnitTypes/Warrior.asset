@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Warrior
   m_EditorClassIdentifier: 
   displayName: "\u6218\u58EB"
+  maxHealth: 20
   attack: 8
   defense: 5
-  attackRange: 1.5
+  attackRange: 2
   maxStamina: 12
   speed: 4
   moveCostPerMeter: 1

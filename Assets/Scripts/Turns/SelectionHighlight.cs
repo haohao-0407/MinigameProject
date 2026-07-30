@@ -83,8 +83,9 @@ public class SelectionHighlight : MonoBehaviour
 
         gameObject.SetActive(true);
         transform.SetParent(target, false);
-        // 单位原点通常在中心，胶囊半高约 1，用碰撞体把光环压到脚底
-        float footY = -GetTargetHalfHeight(target) + groundOffset;
+        // 单位原点通常在中心，胶囊半高约 1，用碰撞体把光环压到脚底。
+        // 再叠加该单位在 Unit 脚本中单独配置的高度微调。
+        float footY = -GetTargetHalfHeight(target) + groundOffset + GetTargetHeightOffset(target);
         transform.localPosition = new Vector3(0f, footY, 0f);
         transform.localRotation = Quaternion.identity;
     }
@@ -94,6 +95,13 @@ public class SelectionHighlight : MonoBehaviour
         var col = t.GetComponent<Collider>();
         if (col != null) return col.bounds.extents.y;
         return 1f;
+    }
+
+    // 读取目标单位在 Unit 脚本中单独配置的光环高度微调；无 Unit 组件则为 0。
+    private float GetTargetHeightOffset(Transform t)
+    {
+        var unit = t.GetComponent<Vampire.Units.Unit>();
+        return unit != null ? unit.HighlightHeightOffset : 0f;
     }
 
     // 在 XZ 平面生成一个环形（三角带）网格

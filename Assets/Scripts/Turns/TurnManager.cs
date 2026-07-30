@@ -19,6 +19,8 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private List<Unit> units = new List<Unit>();
     [Tooltip("AI 每步行动之间的停顿（秒），便于观察")]
     [SerializeField] private float aiActionDelay = 0.6f;
+    [Tooltip("AI 靠近目标时，停在攻击射程内侧的缓冲距离（米），避免恰好卡在射程边缘导致攻击落空")]
+    [SerializeField, Min(0f)] private float aiApproachBuffer = 0.6f;
     [Tooltip("触发结束回合后，等待单位移动完成的最长时间（秒）")]
     [SerializeField, Min(0f)] private float turnEndMoveTimeout = 3f;
 
@@ -351,22 +353,53 @@ public class TurnManager : MonoBehaviour
         Unit target = FindNearestHostile(self);
         if (target != null)
         {
+            // 不在射程内先靠近：停在射程内侧留一点缓冲，避免恰好卡在边缘导致后续攻击落空。
             if (!self.IsInAttackRange(target))
             {
-                self.MoveToward(target, self.Type.attackRange);
+                float stopDistance = Mathf.Max(0f, self.Type.attackRange - aiApproachBuffer);
+                self.MoveToward(target, stopDistance);
 
-                // 等一帧让 NavMeshAgent 开始计算路径，再等待移动结束。
-                yield return null;
-                while (self != null && self.IsAlive && self.IsMoving)
-                    yield return null;
+                // 等待移动真正完成（先等路径算好，再等走到位），确保之后的射程判定基于最终位置。
+                yield return WaitForArrival(self);
             }
 
-            if (self != null && self.IsAlive && target != null && target.IsAlive)
+            // 移动后若已进入射程就攻击；攻击动画与伤害结算由 Unit 自行处理。
+            if (self != null && self.IsAlive && target != null && target.IsAlive &&
+                self.IsInAttackRange(target))
+            {
                 self.TryAttack(target);
+
+                // 等攻击动画播完 + 伤害结算，避免回合过早切换打断攻击。
+                while (self != null && self.IsAttacking)
+                    yield return null;
+            }
         }
 
         aiActing = false;
         NextTurn();
+    }
+
+    // 等待单位这次移动真正完成。分两步：
+    // 1) 先等 NavMeshAgent 把路径算好并开始移动（SetDestination 后 pathPending/hasPath
+    //    需要一到多帧才置位，单等一帧会误判为“没在动”而提前返回）；
+    // 2) 再等它走到停止距离。整体用超时兜底，避免路径无效时卡死。
+    private IEnumerator WaitForArrival(Unit self)
+    {
+        // 阶段一：等待移动真正开始。用较短的启动窗口兜底——若因耐力不足/路径无效
+        // 而根本没发起移动，就不必空等整个回合超时。
+        float startDeadline = Time.realtimeSinceStartup + 0.95f;
+        while (self != null && self.IsAlive && !self.IsMoving &&
+               Time.realtimeSinceStartup < startDeadline)
+            yield return null;
+
+        // 阶段二：等待移动结束（或超时），超时时间用回合等待上限。
+        float moveDeadline = Time.realtimeSinceStartup + turnEndMoveTimeout;
+        while (self != null && self.IsAlive && self.IsMoving &&
+               Time.realtimeSinceStartup < moveDeadline)
+            yield return null;
+
+        // 停稳一帧，让 transform 位置落定后再判定射程。
+        yield return null;
     }
 
     // 找到距 self 最近的敌对单位

@@ -20,6 +20,12 @@ namespace Vampire.Units
         [Tooltip("角色动画控制器；留空则运行时从自身或子物体上查找")]
         [SerializeField] private Animator animator;
 
+        [Tooltip("脚下光环的高度微调（米）：正值抬高、负值压低，供每个角色单独对齐脚底")]
+        [SerializeField] private float highlightHeightOffset = 0f;
+
+        // 脚下光环相对默认脚底位置的高度偏移，由 SelectionHighlight 读取。
+        public float HighlightHeightOffset => highlightHeightOffset;
+
         // 动画 Bool 参数名：移动时置 run，攻击时置 attack。
         private const string RunParam = "run";
         private const string AttackParam = "attack";
@@ -205,15 +211,31 @@ namespace Vampire.Units
             return true;
         }
 
-        // 攻击流程：置 attack=true 播放攻击动画 → 等动画播完 → 结算伤害 → 复位 attack。
+        // attack 动画状态的名字（与控制器中的状态名一致）。
+        private const string AttackStateName = "attack";
+        // 攻击动画等待的兜底超时（秒），防止状态名不匹配或无动画时卡死。
+        private const float AttackTimeout = 5f;
+
+        // 攻击流程：置 attack=true 播放攻击动画 → 等动画真正播完 → 结算伤害 → 复位 attack。
         private IEnumerator AttackRoutine(Unit target)
         {
             if (hasAttackParam)
             {
                 animator.SetBool(AttackHash, true);
-                // 等一帧让状态机从 idle 切入 attack 状态，再读取该状态的时长。
-                yield return null;
-                yield return new WaitForSeconds(GetCurrentStateRemaining());
+
+                // 阶段一：等状态机真正切入 attack 状态（切换需要一到多帧，
+                // 过早读取时长会读到 idle/过渡态而等得太短）。
+                float deadline = Time.realtimeSinceStartup + AttackTimeout;
+                while (!IsInAttackState() && Time.realtimeSinceStartup < deadline)
+                    yield return null;
+
+                // 阶段二：等 attack 状态播放到结尾（normalizedTime 到 1）。
+                while (IsInAttackState() &&
+                       animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f &&
+                       Time.realtimeSinceStartup < deadline)
+                    yield return null;
+
+                // 复位，让状态机从 attack 退回 idle。
                 animator.SetBool(AttackHash, false);
             }
 
@@ -228,16 +250,11 @@ namespace Vampire.Units
             IsAttacking = false;
         }
 
-        // 当前动画状态的剩余播放时间（秒）。无动画或时长无效时回退到一个短固定值。
-        private float GetCurrentStateRemaining()
+        // 动画状态机（第 0 层）当前是否处于 attack 状态。
+        private bool IsInAttackState()
         {
-            if (animator == null) return 0.35f;
-            var state = animator.GetCurrentAnimatorStateInfo(0);
-            float length = state.length;
-            if (length <= 0f || float.IsInfinity(length)) return 0.35f;
-            // normalizedTime 的小数部分表示当前循环已播放的比例。
-            float played = Mathf.Repeat(state.normalizedTime, 1f);
-            return Mathf.Max(0f, length * (1f - played));
+            if (animator == null) return false;
+            return animator.GetCurrentAnimatorStateInfo(0).IsName(AttackStateName);
         }
 
         // 回复生命值，上限为最大生命。返回实际恢复的量；实际回血 >0 时触发 Healed。
