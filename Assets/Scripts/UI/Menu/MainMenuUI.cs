@@ -27,7 +27,9 @@ public class MainMenuUI : UIWindow
     public void OnStartClicked()
     {
         Debug.Log("Start Click");
-        UIManager.Instance.Open(UIPanelType.StageSelect);
+
+        SceneLoader.Instance.LoadScene("SampleScene");
+        //UIManager.Instance.Open(UIPanelType.StageSelect);
     }
 
     private void OnSettingsClicked()

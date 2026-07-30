@@ -1,0 +1,15 @@
+sandbox_mode = "danger-full-access"
+approval_policy = "on-request"
+[mcp_servers.unity]
+command = "npx"
+args = ["-y", "anklebreaker-unity-mcp@latest"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+default_tools_approval_mode = "prompt"
+
+[mcp_servers.unity.env]
+UNITY_HUB_PATH = "C:\\Program Files\\Unity Hub\\Unity Hub.exe"
+UNITY_BRIDGE_HOST = "127.0.0.1"
+UNITY_BRIDGE_PORT = "7890"
+UNITY_MCP_COMPACT_TOOLS = "1"

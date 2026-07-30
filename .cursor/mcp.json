@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "unity": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "anklebreaker-unity-mcp@latest"],
+      "env": {
+        "UNITY_HUB_PATH": "C:\\Program Files\\Unity Hub\\Unity Hub.exe",
+        "UNITY_BRIDGE_HOST": "127.0.0.1",
+        "UNITY_BRIDGE_PORT": "7890",
+        "UNITY_MCP_COMPACT_TOOLS": "1"
+      }
+    }
+  }
+}

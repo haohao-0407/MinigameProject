@@ -22,7 +22,7 @@ public class TurnManager : MonoBehaviour
     [Tooltip("触发结束回合后，等待单位移动完成的最长时间（秒）")]
     [SerializeField, Min(0f)] private float turnEndMoveTimeout = 3f;
 
-    private int currentIndex = -1;
+    public int currentIndex = -1;
     private Camera cam;
     private SelectionHighlight highlight;
     private readonly List<SelectionHighlight> factionHighlights = new List<SelectionHighlight>();
@@ -34,6 +34,8 @@ public class TurnManager : MonoBehaviour
     private bool aiActing;   // 敌方 AI 正在行动，期间屏蔽玩家输入
     private bool switching;   // 正在等待当前动作完成 / 切换回合，期间屏蔽输入
     private bool skillTargeting; // 处于技能目标选择模式：左键点选友军施放，屏蔽移动/攻击
+
+    public Unit CurrentUnit { get; private set; }//接口
 
     // 当前行动单位的技能控制器（英雄单位才有）。
     private SkillController ActiveSkills =>
@@ -183,6 +185,7 @@ public class TurnManager : MonoBehaviour
             if (candidate == null || !candidate.IsAlive) continue;
 
             currentIndex = candidateIndex;
+            CurrentUnit = units[currentIndex];
             break;
         }
 
@@ -191,7 +194,9 @@ public class TurnManager : MonoBehaviour
         {
             currentIndex = -1;
             highlight?.SetTarget(null);
+            CurrentUnit = null;
             return;
+
         }
 
         active?.OnTurnStart();
@@ -369,6 +374,7 @@ public class TurnManager : MonoBehaviour
         return best;
     }
 
+    /*
     void OnGUI()
     {
         var active = ActiveUnit;
@@ -402,5 +408,6 @@ public class TurnManager : MonoBehaviour
             GUI.Label(new Rect(10, 32, 700, 22), "AI 单位自动行动中…");
         }
     }
+    */
 }
 }
