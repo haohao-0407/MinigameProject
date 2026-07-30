@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Vampire
   m_EditorClassIdentifier: 
   displayName: "\u5438\u8840\u9B3C"
+  maxHealth: 20
   attack: 5
   defense: 3
-  attackRange: 1.5
+  attackRange: 2.5
   maxStamina: 10
   speed: 5
   moveCostPerMeter: 0.9

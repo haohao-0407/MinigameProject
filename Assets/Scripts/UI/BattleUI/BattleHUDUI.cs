@@ -101,16 +101,16 @@ public class BattleHUD : MonoBehaviour
             skillText.text = string.Empty;
 
         /*
-         * turnText ²»Çå¿Õ¡£
-         * ÒòÎªÃ»ÓÐÑ¡ÖÐµ¥Î»Ê±£¬µ±Ç°»ØºÏÊý×ÖÈÔÈ»Ó¦¸ÃÏÔÊ¾¡£
+         * turnText ï¿½ï¿½ï¿½ï¿½Õ¡ï¿½
+         * ï¿½ï¿½ÎªÃ»ï¿½ï¿½Ñ¡ï¿½Ðµï¿½Î»Ê±ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»Ó¦ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½
          */
     }
 
     private string GetSkillInfo()
     {
         /*
-         * Unit ÔÝÊ±Ã»ÓÐ¹«¿ª SkillController£¬
-         * ËùÒÔÏÈ±£ÁôÕ¼Î»ÄÚÈÝ¡£
+         * Unit ï¿½ï¿½Ê±Ã»ï¿½Ð¹ï¿½ï¿½ï¿½ SkillControllerï¿½ï¿½
+         * ï¿½ï¿½ï¿½ï¿½ï¿½È±ï¿½ï¿½ï¿½Õ¼Î»ï¿½ï¿½ï¿½Ý¡ï¿½
          */
         return "Skill Ready";
     }
