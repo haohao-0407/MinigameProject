@@ -148,19 +148,19 @@ public class BattleHUDController : MonoBehaviour
     {
         Unit targetUnit;
 
-        if (lockedUnit != null)
+        if (hoverDetector.HoverUnit != null)
         {
-            // 已经点击锁定时，始终显示锁定对象。
-            targetUnit = lockedUnit;
-        }
-        else if (hoverDetector.HoverUnit != null)
-        {
-            // 没锁定时，鼠标碰到谁就临时显示谁。
+            // 鼠标碰到任何单位时，始终优先显示该单位
             targetUnit = hoverDetector.HoverUnit;
+        }
+        else if (lockedUnit != null)
+        {
+            // 鼠标移开后，恢复到上一次点击锁定的单位
+            targetUnit = lockedUnit;
         }
         else
         {
-            // 鼠标移开后恢复当回合主角。
+            // 没有锁定对象时，显示当前回合单位
             targetUnit = turnManager.CurrentUnit;
         }
 
@@ -170,7 +170,6 @@ public class BattleHUDController : MonoBehaviour
         }
         else
         {
-            // 显示对象未改变，但HP、AP等数值可能改变。
             battleHUD.Refresh();
         }
     }
