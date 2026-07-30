@@ -1,0 +1,17 @@
+---
+alwaysApply: true
+---
+
+# Unity 项目规则
+
+- 这是一个 Unity C# 项目。
+- 修改脚本前先搜索现有实现，不要创建重复系统。
+- 不要修改 Library、Temp、Logs、obj、UserSettings 文件夹。
+- 不要手动编辑 .meta 文件，除非任务明确要求。
+- 修改 C# 后，优先通过 Unity MCP 检查 Console 编译错误。
+- 涉及场景、Prefab、GameObject、Component 的操作，优先使用 Unity MCP。
+- 修改场景、Prefab、ScriptableObject 前，先说明影响范围。
+- 不要自动删除 GameObject、组件、资源或场景节点，除非用户明确要求。
+- 不要自动保存场景，除非用户明确要求。
+- 保持现有代码命名风格和目录结构。
+- 排查 bug 时，先读取 Console、当前场景层级、相关组件属性，再改代码。
